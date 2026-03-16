@@ -1,0 +1,45 @@
+{
+  "name": "nexad-website",
+  "version": "1.0.0",
+  "description": "High-conversion marketing website for NEXAD AI-Enhanced Consultation System",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "deploy": "echo 'Deploy to your preferred hosting platform'",
+    "lint:css": "stylelint styles/*.css",
+    "lint:js": "eslint scripts/*.js",
+    "optimize": "imagemin assets/*.{jpg,png} --out-dir=assets/optimized"
+  },
+  "keywords": [
+    "nexad",
+    "education",
+    "consultation",
+    "marketing",
+    "website",
+    "mobile-app",
+    "landing-page"
+  ],
+  "author": "NEXAD Team",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahkeyuuuhh/NEXAD-WEB.git"
+  },
+  "homepage": "https://nexad.app",
+  "devDependencies": {
+    "serve": "^14.2.1",
+    "stylelint": "^15.10.3",
+    "eslint": "^8.50.0",
+    "imagemin": "^8.0.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^9.0.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
