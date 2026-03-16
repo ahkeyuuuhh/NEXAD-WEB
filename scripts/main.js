@@ -213,3 +213,30 @@ if (typeof module !== 'undefined' && module.exports) {
         handleFormSubmit
     };
 }
+// ===== DEMO BUTTON HANDLING =====
+document.addEventListener('DOMContentLoaded', function() {
+    const demoButtons = document.querySelectorAll('.demo-btn');
+    
+    demoButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const demoType = this.getAttribute('data-demo');
+            
+            // Track demo clicks (replace with your analytics)
+            console.log(`Demo clicked: ${demoType}`);
+            
+            // You can replace these with actual demo video URLs
+            const demoUrls = {
+                student: '#student-demo-video',
+                teacher: '#teacher-demo-video'
+            };
+            
+            // For now, just log - replace with actual video modal or redirect
+            alert(`${demoType.charAt(0).toUpperCase() + demoType.slice(1)} demo will be available soon!`);
+            
+            // Example: Open video in new tab (uncomment when you have demo videos)
+            // window.open(demoUrls[demoType], '_blank');
+        });
+    });
+});
