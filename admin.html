@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NEXAD</title>
+    <meta name="description" content="NEXAD Admin Dashboard - Manage contacts, manual content, and system analytics.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="./assets/fonts/fonts.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/admin.css">
+
+    <!-- Google Auth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <!-- Admin Login -->
+    <div id="adminLogin" class="admin-login">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <img src="./assets/light-hrLogo.png" alt="NEXAD" class="login-logo">
+                    <h1>Admin Dashboard</h1>
+                    <p>Sign in to access the NEXAD admin panel</p>
+                </div>
+                
+                <div class="login-form">
+                    <div id="g_id_onload"
+                         data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                         data-callback="handleAdminLogin"
+                         data-auto_prompt="false">
+                    </div>
+                    <div class="g_id_signin" 
+                         data-type="standard"
+                         data-size="large"
+                         data-theme="outline"
+                         data-text="sign_in_with"
+                         data-shape="rectangular"
+                         data-logo_alignment="left">
+                    </div>
+                    <p class="login-note">Only authorized administrators can access this panel</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <img src="./assets/light-hrLogo.png" alt="NEXAD" class="header-logo">
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="admin-profile">
+                        <img id="adminAvatar" src="" alt="Admin" class="admin-avatar">
+                        <span id="adminName">Admin</span>
+                        <button id="logoutBtn" class="logout-btn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="admin-nav">
+            <div class="nav-content">
+                <button class="nav-btn active" data-section="overview">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <rect x="9" y="9" width="6" height="6"/>
+                        <path d="M9 1v6"/>
+                        <path d="M21 9h-6"/>
+                        <path d="M9 21v-6"/>
+                        <path d="M3 9h6"/>
+                    </svg>
+                    Overview
+                </button>
+                <button class="nav-btn" data-section="contacts">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Contacts
+                    <span id="contactsCount" class="nav-badge">0</span>
+                </button>
+                <button class="nav-btn" data-section="manual">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10,9 9,9 8,9"/>
+                    </svg>
+                    Manual Editor
+                </button>
+                <button class="nav-btn" data-section="analytics">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                    </svg>
+                    Analytics
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Overview Section -->
+            <section id="overview" class="admin-section active">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                    <p>Welcome to the NEXAD admin panel. Here's a summary of your system.</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalContacts">0</h3>
+                            <p>Total Contacts</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalDownloads">1,247</h3>
+                            <p>App Downloads</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="manualViews">3,456</h3>
+                            <p>Manual Views</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="activeUsers">892</h3>
+                            <p>Active Users</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list" id="recentActivity">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contacts Section -->
+            <section id="contacts" class="admin-section">
+                <div class="section-header">
+                    <h2>Contact Messages</h2>
+                    <p>Manage and respond to user inquiries</p>
+                </div>
+                
+                <div class="contacts-toolbar">
+                    <div class="toolbar-left">
+                        <select id="contactFilter" class="filter-select">
+                            <option value="all">All Messages</option>
+                            <option value="unread">Unread</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="bug">Bug Reports</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-right">
+                        <button id="markAllRead" class="btn btn-outline">Mark All Read</button>
+                        <button id="exportContacts" class="btn btn-primary">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div class="contacts-list" id="contactsList">
+                    <!-- Contact messages will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Manual Editor Section -->
+            <section id="manual" class="admin-section">
+                <div class="section-header">
+                    <h2>Manual Content Editor</h2>
+                    <p>Update and manage user manual content</p>
+                </div>
+                
+                <div class="manual-editor">
+                    <div class="editor-toolbar">
+                        <select id="manualSection" class="section-select">
+                            <option value="student-getting-started">Student - Getting Started</option>
+                            <option value="student-profile">Student - Profile Setup</option>
+                            <option value="student-classrooms">Student - Joining Classrooms</option>
+                            <option value="teacher-getting-started">Teacher - Getting Started</option>
+                            <option value="teacher-profile">Teacher - Profile Setup</option>
+                            <option value="teacher-classrooms">Teacher - Managing Classrooms</option>
+                        </select>
+                        <button id="saveManual" class="btn btn-primary">Save Changes</button>
+                    </div>
+                    
+                    <div class="editor-content">
+                        <textarea id="manualEditor" class="manual-textarea" placeholder="Enter manual content here..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="admin-section">
+                <div class="section-header">
+                    <h2>Analytics & Reports</h2>
+                    <p>Track website and app performance metrics</p>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Website Traffic</h3>
+                        <div class="chart-placeholder">
+                            <p>Chart visualization would go here</p>
+                            <p>Unique visitors: <strong>2,341</strong></p>
+                            <p>Page views: <strong>5,678</strong></p>
+                            <p>Bounce rate: <strong>34%</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Download Statistics</h3>
+                        <div class="chart-placeholder">
+                            <p>Download trends would be displayed here</p>
+                            <p>Android APK: <strong>1,247</strong></p>
+                            <p>iOS IPA: <strong>0</strong></p>
+                            <p>Growth rate: <strong>+15%</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>User Engagement</h3>
+                        <div class="chart-placeholder">
+                            <p>Engagement metrics visualization</p>
+                            <p>Manual page views: <strong>3,456</strong></p>
+                            <p>Contact form submissions: <strong>89</strong></p>
+                            <p>Average session: <strong>4m 32s</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./scripts/admin.js"></script>
+</body>
+</html>

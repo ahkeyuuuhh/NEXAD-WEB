@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - NEXAD</title>
+    <meta name="description" content="Get in touch with the NEXAD team. We're here to help with any questions about our AI-enhanced consultation system.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="./assets/fonts/fonts.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/contact.css">
+
+    <!-- Google Auth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="./assets/light-hrLogo.png" alt="NEXAD" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html#features" class="nav-link">Features</a>
+                <a href="index.html#preview" class="nav-link">Preview</a>
+                <a href="index.html#download" class="nav-link">Download</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
+                <a href="manual.html" class="nav-link">Manual</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contact Section -->
+    <section class="contact-hero">
+        <div class="contact-container">
+            <div class="contact-header">
+                <img src="./assets/icon-noText.png" alt="NEXAD" class="contact-logo">
+                <h1 class="contact-page-title">Contact Us</h1>
+                <p class="contact-page-subtitle">Have questions or need support? We're here to help you get the most out of NEXAD.</p>
+            </div>
+            
+            <div class="contact-content-centered">
+                <!-- Email Info Card -->
+                <a href="mailto:nexad.suport@gmail.com" class="email-card-large">
+                    <div class="email-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <div class="email-card-content">
+                        <h3>Email us</h3>
+                        <p>nexad.suport@gmail.com</p>
+                    </div>
+                    <div class="email-card-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7"/>
+                            <path d="M7 7h10v10"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Contact Form Card -->
+                <div class="contact-form-card">
+                    <h2 class="form-card-title">Send us a message</h2>
+                    <p class="form-card-subtitle">Have questions? We're here to help.</p>
+                    
+                    <!-- Google Sign-In -->
+                    <div class="auth-section" id="authSection">
+                        <div id="g_id_onload"
+                             data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                             data-callback="handleCredentialResponse"
+                             data-auto_prompt="false">
+                        </div>
+                        <div class="g_id_signin" 
+                             data-type="standard"
+                             data-size="large"
+                             data-theme="outline"
+                             data-text="sign_in_with"
+                             data-shape="pill"
+                             data-logo_alignment="left"
+                             data-width="400">
+                        </div>
+                        <p class="auth-note">Sign in with Google to send us a message</p>
+                    </div>
+
+                    <form id="contactForm" class="contact-form-modern" style="display: none;">
+                        <div class="form-group-modern">
+                            <input type="text" id="name" name="name" placeholder="Name" required readonly>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <input type="email" id="email" name="email" placeholder="Email" required readonly>
+                        </div>
+
+                        <div class="form-group-modern">
+                            <textarea id="message" name="message" rows="6" placeholder="Message" required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn-modern">
+                            Submit
+                        </button>
+                    </form>
+
+                    <div id="successMessage" class="success-message-modern" style="display: none;">
+                        <div class="success-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 12l2 2 4-4"/>
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                        </div>
+                        <h3>Message Sent Successfully!</h3>
+                        <p>Thank you for contacting us. We'll get back to you within 24 hours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="./assets/dark-hrLogo.png" alt="NEXAD" class="footer-logo">
+                    <p class="footer-description">
+                        Transforming educational consultations through AI-enhanced technology
+                    </p>
+                    <p class="footer-developer">
+                        Developed by <strong>Aki Zita</strong>
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4 class="footer-section-title">Product</h4>
+                        <ul class="footer-list">
+                            <li><a href="index.html#features" class="footer-link">Features</a></li>
+                            <li><a href="index.html#preview" class="footer-link">Preview</a></li>
+                            <li><a href="index.html#download" class="footer-link">Download</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4 class="footer-section-title">Support</h4>
+                        <ul class="footer-list">
+                            <li><a href="contact.html" class="footer-link">Contact Us</a></li>
+                            <li><a href="manual.html" class="footer-link">Manual</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">
+                        © 2026 NEXAD. All rights reserved.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect x="2" y="9" width="4" height="12"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="GitHub">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./scripts/contact.js"></script>
+</body>
+</html>

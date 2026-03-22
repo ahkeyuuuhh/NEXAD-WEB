@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual - NEXAD</title>
+    <meta name="description" content="Complete user manual for NEXAD - Learn how to use all features of our AI-enhanced consultation system.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="./assets/fonts/fonts.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/manual.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="./assets/light-hrLogo.png" alt="NEXAD" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html#features" class="nav-link">Features</a>
+                <a href="index.html#preview" class="nav-link">Preview</a>
+                <a href="index.html#download" class="nav-link">Download</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="manual.html" class="nav-link active">Manual</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Manual Hero -->
+    <section class="manual-hero">
+        <div class="manual-container-small">
+            <div class="manual-header">
+                <img src="./assets/icon-noText.png" alt="NEXAD" class="manual-logo">
+                <h1 class="manual-title">NEXAD User Manual</h1>
+                <p class="manual-subtitle">
+                    Learn how to use NEXAD's consultation and classroom features
+                </p>
+                <div class="manual-tabs">
+                    <button class="tab-btn active" data-tab="student">
+                        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Student Manual
+                    </button>
+                    <button class="tab-btn" data-tab="teacher">
+                        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Teacher Manual
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manual Content -->
+    <section class="manual-content">
+        <div class="manual-container-small">
+            <!-- Student Manual Content -->
+            <div id="student-content" class="manual-section active">
+                <div class="flow-grid">
+                    <!-- Consultation Flow -->
+                    <div class="flow-card">
+                        <button class="flow-header" data-flow="student-consultation">
+                            <div class="flow-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <h2>Consultation Flow</h2>
+                            <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="flow-content">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-details">
+                                    <h3>Request a Consultation</h3>
+                                    <p>Navigate to your classroom and tap the "Request Consultation" button. Select your preferred date and time, choose a category (Academic, Personal, Career), and describe your concern.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-details">
+                                    <h3>Wait for Approval</h3>
+                                    <p>Your teacher will review your request and either approve or suggest an alternative time. You'll receive a notification once your consultation is confirmed.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-details">
+                                    <h3>Attend the Consultation</h3>
+                                    <p>At the scheduled time, go to "My Consultations" and join the session. Discuss your concerns with your teacher in a private, focused environment.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-details">
+                                    <h3>Review and Follow Up</h3>
+                                    <p>After the consultation, review any notes or action items. You can request follow-up consultations if needed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classroom Flow -->
+                    <div class="flow-card">
+                        <button class="flow-header" data-flow="student-classroom">
+                            <div class="flow-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9 22 9 12 15 12 15 22"/>
+                                </svg>
+                            </div>
+                            <h2>Classroom Flow</h2>
+                            <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="flow-content">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-details">
+                                    <h3>Join a Classroom</h3>
+                                    <p>Enter the classroom code provided by your teacher. Tap "Join Classroom" on your dashboard and input the code to gain access.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-details">
+                                    <h3>View Announcements</h3>
+                                    <p>Check the classroom feed for important announcements, assignments, and updates from your teacher. Enable notifications to stay informed.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-details">
+                                    <h3>Submit Assignments</h3>
+                                    <p>When assignments are posted, tap to view details, upload your work, and submit before the deadline. Track your submission status in real-time.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-details">
+                                    <h3>Communicate with Teacher</h3>
+                                    <p>Use the messaging feature to ask questions, request clarifications, or discuss classroom matters with your teacher privately.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Manual Content -->
+            <div id="teacher-content" class="manual-section">
+                <div class="flow-grid">
+                    <!-- Consultation Flow -->
+                    <div class="flow-card">
+                        <button class="flow-header" data-flow="teacher-consultation">
+                            <div class="flow-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <h2>Consultation Management</h2>
+                            <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="flow-content">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-details">
+                                    <h3>Review Consultation Requests</h3>
+                                    <p>Access your consultation inbox to view pending requests from students. Review the category, reason, and preferred time for each request.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-details">
+                                    <h3>Approve or Reschedule</h3>
+                                    <p>Approve requests that fit your schedule or suggest alternative times. Students will be notified of your decision immediately.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-details">
+                                    <h3>Conduct the Session</h3>
+                                    <p>At the scheduled time, access the consultation from your dashboard. Take notes during the session to track student progress and concerns.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-details">
+                                    <h3>Document and Follow Up</h3>
+                                    <p>After the consultation, add notes and action items. Schedule follow-up sessions if needed and track student progress over time.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classroom Flow -->
+                    <div class="flow-card">
+                        <button class="flow-header" data-flow="teacher-classroom">
+                            <div class="flow-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9 22 9 12 15 12 15 22"/>
+                                </svg>
+                            </div>
+                            <h2>Classroom Management</h2>
+                            <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="flow-content">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-details">
+                                    <h3>Create a Classroom</h3>
+                                    <p>Set up a new classroom by providing a name, description, and subject. A unique classroom code will be generated for students to join.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-details">
+                                    <h3>Post Announcements</h3>
+                                    <p>Share important updates, reminders, and information with your class. Announcements appear in the classroom feed and trigger notifications.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-details">
+                                    <h3>Create and Manage Assignments</h3>
+                                    <p>Post assignments with clear instructions, due dates, and file attachments. Review student submissions and provide feedback directly in the app.</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-details">
+                                    <h3>Monitor Student Progress</h3>
+                                    <p>Track student engagement, assignment completion rates, and consultation history. Use insights to provide targeted support where needed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="./assets/dark-hrLogo.png" alt="NEXAD" class="footer-logo">
+                    <p class="footer-description">
+                        Transforming educational consultations through AI-enhanced technology
+                    </p>
+                    <p class="footer-developer">
+                        Developed by <strong>Aki Zita</strong>
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4 class="footer-section-title">Product</h4>
+                        <ul class="footer-list">
+                            <li><a href="index.html#features" class="footer-link">Features</a></li>
+                            <li><a href="index.html#preview" class="footer-link">Preview</a></li>
+                            <li><a href="index.html#download" class="footer-link">Download</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4 class="footer-section-title">Support</h4>
+                        <ul class="footer-list">
+                            <li><a href="contact.html" class="footer-link">Contact Us</a></li>
+                            <li><a href="manual.html" class="footer-link">Manual</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">
+                        © 2026 NEXAD. All rights reserved.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                <rect x="2" y="9" width="4" height="12"/>
+                                <circle cx="4" cy="4" r="2"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="GitHub">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./scripts/manual.js"></script>
+</body>
+</html>

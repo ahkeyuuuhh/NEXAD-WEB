@@ -1,0 +1,38 @@
+/* NEXAD Website Fonts */
+
+@font-face {
+    font-family: 'Akira Expanded';
+    src: url('./Akira Expanded.otf') format('opentype'),
+         url('./Akira Expanded.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Font fallbacks for better loading */
+.akira-font {
+    font-family: 'Akira Expanded', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.02em;
+}
+
+/* Specific font classes for different use cases */
+.akira-title {
+    font-family: 'Akira Expanded', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: normal;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+
+.akira-heading {
+    font-family: 'Akira Expanded', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.01em;
+}
+
+.akira-button {
+    font-family: 'Akira Expanded', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}

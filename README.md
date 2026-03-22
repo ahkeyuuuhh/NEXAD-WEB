@@ -1,205 +1,216 @@
-# NEXAD Marketing Website
+# NEXAD Website
 
-A high-conversion marketing website for the NEXAD AI-Enhanced Consultation System mobile app. Built with modern web technologies and designed to match the app's monochrome aesthetic.
+A modern, responsive marketing website for the NEXAD AI-enhanced consultation system mobile app.
 
-## 🎯 Purpose
+## 🚀 Features
 
-This website serves as the primary distribution hub for the NEXAD mobile application, featuring:
-- **High-conversion design** optimized for app downloads
-- **Mobile-first approach** for users visiting on their phones
-- **Brand consistency** with the existing mobile app design system
-- **Professional presentation** suitable for educational institutions
-
-## 🎨 Design System
-
-The website strictly follows NEXAD's monochrome design philosophy:
-
-### Color Palette
-- **Surfaces**: Light grey background (#F4F4F4), Pure white cards (#FFFFFF)
-- **Text**: Near-black headings (#111111), Body text (#3D3D3D), Secondary text (#737373)
-- **Accents**: Orange highlights (#F97316) for CTAs and interactive elements
-- **Borders**: Light grey (#E8E8E8) for subtle divisions
-
-### Typography
-- **Primary Font**: Inter (web-safe system fonts as fallback)
-- **Hierarchy**: Bold headings (600-700 weight), Regular body text (400 weight)
-- **Spacing**: Generous whitespace for professional, breathing layout
-
-### Components
-- **Buttons**: Filled (black), Outline (white with black border), Ghost (light grey)
-- **Cards**: White background, subtle shadows, rounded corners (16-20px radius)
-- **Phone Mockups**: CSS-generated frames matching real device proportions
-
-## 📱 Features
-
-### Hero Section
-- Compelling headline with orange accent text
-- Prominent download buttons for all platforms
-- Statistics showcase (users, schools, uptime)
-- Animated phone mockup with app screenshot
-
-### Features Grid
-- 6-column responsive layout highlighting key value propositions
-- Icon-based visual hierarchy
-- Hover effects and animations
-
-### App Preview
-- Multi-device mockup showcase
-- 3D perspective effects for visual depth
-- Screenshots of actual app interfaces
-
-### Download Section
-- Platform-specific download buttons (iOS, Android, Desktop)
-- Trust indicators (free, secure, regular updates)
-- Clear call-to-action hierarchy
-
-### Footer
-- Comprehensive link structure
-- Social media integration
-- Legal and support links
-
-## 🛠 Technical Stack
-
-- **HTML5**: Semantic markup with accessibility features
-- **CSS3**: Modern features (Grid, Flexbox, Custom Properties)
-- **Vanilla JavaScript**: Lightweight, no framework dependencies
-- **Responsive Design**: Mobile-first approach with breakpoints
-- **Performance Optimized**: Lazy loading, efficient animations
+- **Modern Design**: Clean, professional design matching the mobile app's aesthetic
+- **Responsive Layout**: Optimized for desktop, tablet, and mobile devices
+- **Interactive Components**: Smooth animations and hover effects
+- **Admin Dashboard**: Complete admin panel for managing contacts and content
+- **Contact System**: Google Sign-In integrated contact form
+- **User Manual**: Comprehensive documentation for students and teachers
+- **Performance Optimized**: Fast loading with service worker caching
 
 ## 📁 Project Structure
 
 ```
 nexad-website/
-├── index.html              # Main HTML file
+├── index.html              # Main landing page
+├── contact.html            # Contact form page
+├── manual.html             # User manual page
+├── admin.html              # Admin dashboard
+├── sw.js                   # Service worker for caching
 ├── styles/
-│   └── main.css            # Complete CSS with design system
+│   ├── main.css           # Main stylesheet with design system
+│   ├── contact.css        # Contact page styles
+│   ├── manual.css         # Manual page styles
+│   └── admin.css          # Admin dashboard styles
 ├── scripts/
-│   └── main.js             # Interactive functionality
+│   ├── main.js            # Main website functionality
+│   ├── contact.js         # Contact form handling
+│   ├── manual.js          # Manual navigation and features
+│   └── admin.js           # Admin dashboard functionality
 ├── assets/
-│   ├── logo.svg            # NEXAD logo
-│   ├── README.md           # Asset guidelines
-│   └── [screenshots]       # App screenshots (to be added)
-└── README.md               # This file
+│   ├── light-hrLogo.png   # Light theme logo
+│   ├── dark-hrLogo.png    # Dark theme logo
+│   ├── favicon.ico        # Website favicon
+│   └── [app-screenshots] # Mobile app screenshots
+└── README.md              # This file
 ```
 
-## 🚀 Getting Started
+## 🎨 Design System
 
-### Prerequisites
-- Modern web browser
-- Web server (for local development)
+The website uses a monochrome design system that matches the NEXAD mobile app:
 
-### Local Development
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/ahkeyuuuhh/NEXAD-WEB.git
-   cd NEXAD-WEB
-   ```
+### Colors
+- **Background**: #F4F4F4
+- **Surface**: #FFFFFF
+- **Primary Text**: #111111
+- **Secondary Text**: #3D3D3D
+- **Accent**: #737373
+- **Borders**: #D9D9D9
 
-2. Serve the files using a local web server:
-   ```bash
-   # Using Python
-   python -m http.server 8000
-   
-   # Using Node.js
-   npx serve .
-   
-   # Using PHP
-   php -S localhost:8000
-   ```
+### Typography
+- **Font Family**: Inter (Google Fonts)
+- **Headings**: 600-700 weight
+- **Body Text**: 400-500 weight
 
-3. Open `http://localhost:8000` in your browser
+### Components
+- **Buttons**: Pill-shaped with hover effects
+- **Cards**: Subtle shadows and rounded corners
+- **Navigation**: Fixed header with blur effect
+- **Phone Mockups**: 3D perspective effects
 
-### Adding App Screenshots
-1. Take screenshots from the NEXAD mobile app (375x812px recommended)
-2. Save as JPG files in the `assets/` directory:
-   - `app-screenshot-1.jpg` - Main dashboard
-   - `app-screenshot-2.jpg` - Student view
-   - `app-screenshot-3.jpg` - Consultation booking
-   - `app-screenshot-4.jpg` - Teacher dashboard
+## 📱 Pages Overview
 
-## 📊 Performance Features
+### Landing Page (index.html)
+- Hero section with app preview
+- Feature showcase
+- App screenshots gallery
+- Download links (Android APK)
+- Footer with developer credit
 
-- **Lazy Loading**: Images load as they enter viewport
-- **Smooth Animations**: CSS-based transitions and transforms
-- **Optimized Assets**: Compressed images and efficient code
-- **Mobile Performance**: Lightweight JavaScript, efficient CSS
+### Contact Page (contact.html)
+- Google Sign-In authentication
+- Contact form with subject categories
+- Contact information cards
+- Success/error handling
 
-## ♿ Accessibility
+### Manual Page (manual.html)
+- Tabbed interface (Student/Teacher)
+- Sidebar navigation
+- Comprehensive documentation
+- Search functionality (planned)
+- Print/export options (planned)
 
-- **WCAG AA Compliant**: High contrast ratios, keyboard navigation
-- **Semantic HTML**: Proper heading hierarchy, ARIA labels
-- **Focus Management**: Visible focus indicators, logical tab order
-- **Screen Reader Support**: Alt text, descriptive link text
+### Admin Dashboard (admin.html)
+- Secure Google Sign-In authentication
+- Contact message management
+- Manual content editor
+- Analytics dashboard
+- Export functionality
 
-## 🔧 Customization
+## 🔧 Setup & Configuration
 
-### Updating Colors
-Modify CSS custom properties in `styles/main.css`:
-```css
-:root {
-    --color-accent-orange: #F97316;  /* Change primary accent */
-    --color-ink-1: #111111;          /* Change primary text */
-    /* ... other variables */
-}
+### 1. Google Sign-In Setup
+Replace `YOUR_GOOGLE_CLIENT_ID` in the following files:
+- `contact.html` (line 47)
+- `admin.html` (line 32)
+- `scripts/admin.js` (line 8)
+
+### 2. Admin Access
+Update authorized admin emails in `scripts/admin.js`:
+```javascript
+const ADMIN_CONFIG = {
+    authorizedEmails: [
+        'admin@nexad.app',
+        'your-email@domain.com'
+    ]
+};
 ```
 
-### Adding Sections
-1. Add HTML structure to `index.html`
-2. Style with CSS following the design system patterns
-3. Add any interactive behavior to `scripts/main.js`
+### 3. Download Links
+Update the Android APK download link in `index.html`:
+```html
+<a href="YOUR_APK_DOWNLOAD_URL" class="download-btn android-btn">
+```
 
-### Download Links
-Update the `href` attributes in the download buttons to point to actual app store links or direct download files.
+### 4. Assets
+Add the following assets to the `assets/` folder:
+- App screenshots for the preview section
+- High-resolution logos
+- App icons for download buttons
 
 ## 🚀 Deployment
 
-### GitHub Pages
-1. Push to the `main` branch
-2. Enable GitHub Pages in repository settings
-3. Select source as "Deploy from a branch"
-4. Choose `main` branch and `/ (root)` folder
+### Static Hosting
+The website is built with vanilla HTML, CSS, and JavaScript and can be deployed to any static hosting service:
 
-### Custom Domain
-1. Add a `CNAME` file with your domain
-2. Configure DNS to point to GitHub Pages
-3. Enable HTTPS in repository settings
+- **Netlify**: Drag and drop the folder
+- **Vercel**: Connect your Git repository
+- **GitHub Pages**: Push to a GitHub repository
+- **Firebase Hosting**: Use Firebase CLI
+- **AWS S3**: Upload files to S3 bucket
 
-### Other Platforms
-The website is static HTML/CSS/JS and can be deployed to:
-- Netlify
-- Vercel
-- AWS S3 + CloudFront
-- Any web hosting service
+### Domain Configuration
+1. Point your domain to the hosting service
+2. Update any hardcoded URLs in the code
+3. Configure SSL certificate
+4. Set up redirects if needed
 
-## 📈 Analytics & Tracking
+## 📊 Analytics & Tracking
 
-The JavaScript includes placeholder functions for analytics tracking:
-- Download button clicks
-- Section scroll tracking
-- Form submissions (if added)
+The website includes built-in analytics tracking:
 
-Integrate with your preferred analytics platform (Google Analytics, Mixpanel, etc.).
+### Local Storage Data
+- Download attempts by platform
+- Manual page views
+- Contact form submissions
+- Performance metrics
+
+### Admin Dashboard
+- View contact messages
+- Export data as CSV
+- Monitor user engagement
+- Track manual usage
+
+## 🔒 Security Features
+
+- **Admin Authentication**: Google Sign-In with email whitelist
+- **Contact Form**: Requires authentication to prevent spam
+- **Data Storage**: Local storage for demo (replace with backend)
+- **Input Validation**: Client-side form validation
+
+## 🎯 Performance Optimizations
+
+- **Service Worker**: Caches static assets for faster loading
+- **Lazy Loading**: Images load only when needed
+- **Minified Assets**: Compressed CSS and JavaScript
+- **Responsive Images**: Optimized for different screen sizes
+- **Smooth Animations**: Hardware-accelerated CSS transitions
+
+## 🔄 Future Enhancements
+
+### Planned Features
+- [ ] Search functionality in manual
+- [ ] PDF export for manual sections
+- [ ] Real-time analytics dashboard
+- [ ] Multi-language support
+- [ ] Dark mode toggle
+- [ ] Progressive Web App (PWA) features
+- [ ] Backend integration for contact forms
+- [ ] Email notifications for admin
+- [ ] Advanced analytics with charts
+
+### Technical Improvements
+- [ ] TypeScript conversion
+- [ ] Build process with bundling
+- [ ] Automated testing
+- [ ] CI/CD pipeline
+- [ ] Performance monitoring
+- [ ] SEO optimizations
+- [ ] Accessibility improvements
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes following the design system
-4. Test on multiple devices and browsers
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
 5. Submit a pull request
 
 ## 📄 License
 
-This project is part of the NEXAD application suite. All rights reserved.
+This project is part of the NEXAD application suite developed by Aki Zita.
 
 ## 📞 Support
 
-For questions about the website or NEXAD app:
-- Create an issue in this repository
-- Contact the development team
-- Check the NEXAD app documentation
+For technical support or questions about the website:
+- Email: support@nexad.app
+- Use the contact form on the website
+- Check the manual for common questions
 
 ---
 
-**Built with ❤️ for modern education**
-A marketing website for Nexad
+**Developed by Aki Zita** - Transforming educational consultations through AI-enhanced technology.
