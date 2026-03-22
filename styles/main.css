@@ -281,9 +281,10 @@ body {
 .nav-logo {
     width: 120px;
     height: auto;
-    max-height: 120px;
+    max-height: 40px;
     filter: brightness(0) invert(1);
     transition: filter 0.3s ease;
+    object-fit: contain;
 }
 
 .nav-scrolled .nav-logo {
@@ -759,7 +760,8 @@ body {
 .footer-logo {
     width: 140px;
     height: auto;
-    max-height: 140px;
+    max-height: 45px;
+    object-fit: contain;
 }
 
 .footer-title {
@@ -864,7 +866,7 @@ body {
     
     .nav-logo {
         width: 100px;
-        max-height: 35px;
+        max-height: 34px;
     }
     
     /* Hero */
@@ -1040,8 +1042,8 @@ body {
     }
     
     .footer-logo {
-        width: 100px;
-        max-height: 40px;
+        width: 110px;
+        max-height: 38px;
     }
 }
 
@@ -1054,7 +1056,7 @@ body {
 
     .nav-logo {
         width: 90px;
-        max-height: 32px;
+        max-height: 30px;
     }
 
     /* Typography */
@@ -1188,8 +1190,8 @@ body {
     }
 
     .footer-logo {
-        width: 90px;
-        max-height: 36px;
+        width: 95px;
+        max-height: 34px;
     }
 
     .footer-description {
