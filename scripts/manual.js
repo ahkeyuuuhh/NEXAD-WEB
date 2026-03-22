@@ -82,23 +82,11 @@ function showTab(tabName) {
 
 // Toggle flow card open/closed
 function toggleFlowCard(flowCard) {
-    const isOpen = flowCard.classList.contains('open');
+    // Simply toggle the current card without affecting others
+    flowCard.classList.toggle('open');
     
-    // Close all other flow cards in the same section
-    const allFlowCards = flowCard.closest('.manual-section').querySelectorAll('.flow-card');
-    allFlowCards.forEach(card => {
-        if (card !== flowCard) {
-            card.classList.remove('open');
-        }
-    });
-    
-    // Toggle current card
-    if (isOpen) {
-        flowCard.classList.remove('open');
-    } else {
-        flowCard.classList.add('open');
-        
-        // Smooth scroll to card after opening
+    // Smooth scroll to card after opening
+    if (flowCard.classList.contains('open')) {
         setTimeout(() => {
             flowCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);

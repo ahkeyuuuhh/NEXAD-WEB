@@ -1,17 +1,17 @@
-/* NEXAD Contact Page - Enhanced with Gradient */
+/* NEXAD Contact Page - Clean & Professional Dark Theme */
 
 /* ===== CONTACT HERO ===== */
 .contact-hero {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 140px 0 80px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+    padding: 140px 0 100px;
     position: relative;
     display: flex;
     align-items: center;
 }
 
 .contact-container {
-    max-width: 700px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 0 var(--space-xl);
     position: relative;
@@ -20,78 +20,87 @@
 
 .contact-header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 72px;
 }
 
 .contact-logo {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 32px;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 48px;
     display: block;
+    opacity: 0.9;
 }
 
 .contact-page-title {
     font-family: 'Akira Expanded', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
     font-weight: normal;
-    color: var(--color-ink-1);
-    margin-bottom: 16px;
-    letter-spacing: -0.02em;
+    color: #FFFFFF;
+    margin-bottom: 24px;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    line-height: 1.05;
 }
 
 .contact-page-subtitle {
     font-size: 1.125rem;
-    color: var(--color-ink-3);
-    line-height: 1.6;
-    max-width: 500px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.75;
+    max-width: 520px;
     margin: 0 auto;
+    font-weight: 400;
 }
 
 .contact-content-centered {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
 }
 
-/* ===== EMAIL CARD ===== */
+/* ===== EMAIL CARD - CLEAN GLASSMORPHISM ===== */
 .email-card-large {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 24px 28px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 16px;
-    transition: all 0.3s ease;
+    padding: 28px 32px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     cursor: pointer;
-    box-shadow: var(--shadow-card);
-    max-width: 500px;
-    margin: 0 auto;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     width: 100%;
 }
 
 .email-card-large:hover {
-    border-color: var(--color-action-light);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lift);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .email-card-icon {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    background: var(--color-action-light);
-    border-radius: 12px;
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.email-card-large:hover .email-card-icon {
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .email-card-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke: var(--color-action);
+    width: 26px;
+    height: 26px;
+    stroke: #FFFFFF;
     stroke-width: 2;
 }
 
@@ -100,61 +109,64 @@
 }
 
 .email-card-content h3 {
-    font-size: 1rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--color-ink-1);
-    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .email-card-content p {
-    font-size: 0.9375rem;
-    color: var(--color-ink-3);
+    font-size: 1.0625rem;
+    color: #FFFFFF;
     margin: 0;
+    font-weight: 500;
 }
 
 .email-card-arrow {
     width: 24px;
     height: 24px;
-    opacity: 0.4;
+    opacity: 0.3;
     transition: all 0.3s ease;
 }
 
 .email-card-large:hover .email-card-arrow {
-    opacity: 1;
-    transform: translate(4px, -4px);
+    opacity: 0.8;
+    transform: translate(3px, -3px);
 }
 
 .email-card-arrow svg {
     width: 100%;
     height: 100%;
-    stroke: var(--color-ink-2);
+    stroke: #FFFFFF;
     stroke-width: 2;
 }
 
-/* ===== CONTACT FORM CARD ===== */
+/* ===== CONTACT FORM CARD - CLEAN GLASSMORPHISM ===== */
 .contact-form-card {
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 24px;
-    padding: 48px;
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow-card);
+    padding: 56px 48px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .form-card-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 600;
-    color: var(--color-ink-1);
+    color: #FFFFFF;
     margin-bottom: 12px;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     text-align: center;
 }
 
 .form-card-subtitle {
     font-size: 1rem;
-    color: var(--color-ink-3);
+    color: rgba(255, 255, 255, 0.6);
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     font-weight: 400;
 }
 
@@ -163,11 +175,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 20px 0;
+    gap: 20px;
+    padding: 24px 0;
 }
 
-/* Google Sign-In Button Styling */
+/* Google Sign-In Button - Black Pill Style */
 .auth-section .g_id_signin {
     border-radius: 50px !important;
     overflow: hidden;
@@ -175,11 +187,17 @@
 
 .auth-section .g_id_signin > div {
     border-radius: 50px !important;
+    background: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.auth-section .g_id_signin iframe {
+    border-radius: 50px !important;
 }
 
 .auth-note {
     font-size: 0.875rem;
-    color: var(--color-ink-3);
+    color: rgba(255, 255, 255, 0.5);
     text-align: center;
     margin: 0;
     font-weight: 400;
@@ -189,7 +207,7 @@
 .contact-form-modern {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .form-group-modern {
@@ -199,11 +217,11 @@
 .form-group-modern input,
 .form-group-modern textarea {
     width: 100%;
-    padding: 18px 20px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    color: var(--color-ink-1);
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: #FFFFFF;
     font-size: 1rem;
     font-family: 'Inter', sans-serif;
     transition: all 0.3s ease;
@@ -212,39 +230,41 @@
 
 .form-group-modern input::placeholder,
 .form-group-modern textarea::placeholder {
-    color: var(--color-ink-3);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .form-group-modern input:focus,
 .form-group-modern textarea:focus {
-    background: var(--color-surface-alt);
-    border-color: var(--color-action);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .form-group-modern textarea {
     resize: vertical;
-    min-height: 140px;
+    min-height: 160px;
+    line-height: 1.6;
 }
 
-/* Submit Button */
+/* Submit Button - White Primary Style */
 .submit-btn-modern {
     width: 100%;
-    padding: 18px 32px;
-    background: var(--color-action);
-    color: var(--color-action-text);
-    font-size: 1rem;
+    padding: 20px 32px;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 1.0625rem;
     font-weight: 600;
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 8px;
+    margin-top: 12px;
+    letter-spacing: -0.01em;
 }
 
 .submit-btn-modern:hover {
-    background: var(--color-action-hover);
+    background: #F5F5F5;
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lift);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
 }
 
 .submit-btn-modern:active {
@@ -254,14 +274,14 @@
 /* Success Message */
 .success-message-modern {
     text-align: center;
-    padding: 40px 20px;
+    padding: 48px 24px;
 }
 
 .success-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 24px;
-    background: rgba(34, 197, 94, 0.1);
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 28px;
+    background: rgba(34, 197, 94, 0.15);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -269,55 +289,158 @@
 }
 
 .success-icon svg {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     stroke: #22c55e;
-    stroke-width: 2;
+    stroke-width: 2.5;
 }
 
 .success-message-modern h3 {
-    font-size: 1.5rem;
+    font-size: 1.625rem;
     font-weight: 600;
-    color: var(--color-ink-1);
-    margin-bottom: 12px;
+    color: #FFFFFF;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
 }
 
 .success-message-modern p {
-    font-size: 1rem;
-    color: var(--color-ink-3);
+    font-size: 1.0625rem;
+    color: rgba(255, 255, 255, 0.65);
     margin: 0;
     font-weight: 400;
+    line-height: 1.6;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .contact-hero {
-        padding: 120px 0 60px;
+        padding: 100px 0 80px;
     }
 
     .contact-container {
-        max-width: 100%;
+        padding: 0 20px;
+    }
+
+    .contact-header {
+        margin-bottom: 56px;
     }
 
     .contact-logo {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 24px;
+        width: 56px;
+        height: 56px;
+        margin-bottom: 36px;
     }
 
     .contact-page-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .contact-page-subtitle {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+
+    .contact-content-centered {
+        gap: 24px;
+    }
+
+    .email-card-large {
+        padding: 24px 28px;
+    }
+
+    .email-card-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+    }
+
+    .email-card-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .email-card-content h3 {
+        font-size: 0.75rem;
+    }
+
+    .email-card-content p {
+        font-size: 1rem;
+    }
+
+    .contact-form-card {
+        padding: 40px 32px;
+    }
+
+    .form-card-title {
+        font-size: 1.5rem;
+    }
+
+    .form-card-subtitle {
+        font-size: 0.9375rem;
+        margin-bottom: 32px;
+    }
+
+    .auth-section {
+        padding: 20px 0;
+    }
+
+    .form-group-modern input,
+    .form-group-modern textarea {
+        padding: 18px 20px;
+        font-size: 0.9375rem;
+    }
+
+    .submit-btn-modern {
+        padding: 18px 28px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-hero {
+        padding: 90px 0 60px;
+    }
+
+    .contact-container {
+        padding: 0 16px;
+    }
+
+    .contact-header {
+        margin-bottom: 48px;
+    }
+
+    .contact-logo {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 32px;
+    }
+
+    .contact-page-title {
+        font-size: 1.75rem;
+        margin-bottom: 16px;
+    }
+
+    .contact-page-subtitle {
+        font-size: 0.9375rem;
+        line-height: 1.65;
+    }
+
+    .contact-content-centered {
+        gap: 20px;
     }
 
     .email-card-large {
         padding: 20px 24px;
         gap: 16px;
+        border-radius: 18px;
     }
 
     .email-card-icon {
         width: 44px;
         height: 44px;
         min-width: 44px;
+        border-radius: 12px;
     }
 
     .email-card-icon svg {
@@ -325,72 +448,111 @@
         height: 22px;
     }
 
+    .email-card-content h3 {
+        font-size: 0.6875rem;
+        margin-bottom: 4px;
+    }
+
+    .email-card-content p {
+        font-size: 0.9375rem;
+    }
+
     .contact-form-card {
         padding: 32px 24px;
+        border-radius: 20px;
     }
 
     .form-card-title {
-        font-size: 1.25rem;
+        font-size: 1.375rem;
+        margin-bottom: 10px;
+    }
+
+    .form-card-subtitle {
+        font-size: 0.875rem;
+        margin-bottom: 28px;
+    }
+
+    .auth-section {
+        padding: 16px 0;
+        gap: 16px;
+    }
+
+    .auth-note {
+        font-size: 0.8125rem;
+    }
+
+    .contact-form-modern {
+        gap: 20px;
+    }
+
+    .form-group-modern input,
+    .form-group-modern textarea {
+        padding: 16px 18px;
+        font-size: 0.875rem;
+        border-radius: 12px;
+    }
+
+    .form-group-modern textarea {
+        min-height: 140px;
+    }
+
+    .submit-btn-modern {
+        padding: 16px 24px;
+        font-size: 0.9375rem;
+        border-radius: 12px;
+        margin-top: 8px;
+    }
+
+    .success-message-modern {
+        padding: 40px 20px;
+    }
+
+    .success-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 24px;
+    }
+
+    .success-icon svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .success-message-modern h3 {
+        font-size: 1.375rem;
+        margin-bottom: 12px;
+    }
+
+    .success-message-modern p {
+        font-size: 1rem;
     }
 }
 
-@media (max-width: 480px) {
-    .contact-logo {
-        width: 56px;
-        height: 56px;
-    }
-
+@media (max-width: 360px) {
     .contact-page-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     .contact-page-subtitle {
-        font-size: 1rem;
-    }
-
-    .email-card-large {
-        padding: 18px 20px;
-        gap: 14px;
-    }
-
-    .email-card-icon {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-    }
-
-    .email-card-icon svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .email-card-content h3 {
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
     }
 
     .email-card-content p {
         font-size: 0.875rem;
     }
 
-    .contact-form-card {
-        padding: 24px 20px;
-    }
-
     .form-card-title {
-        font-size: 1.125rem;
-    }
-
-    .form-card-subtitle {
-        font-size: 0.9375rem;
+        font-size: 1.25rem;
     }
 
     .form-group-modern input,
     .form-group-modern textarea {
-        padding: 16px;
-        font-size: 0.9375rem;
+        padding: 14px 16px;
+        font-size: 0.8125rem;
     }
 
     .submit-btn-modern {
-        padding: 16px 28px;
+        padding: 14px 20px;
+        font-size: 0.875rem;
     }
 }

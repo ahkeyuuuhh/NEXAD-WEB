@@ -210,50 +210,14 @@ body {
 .btn-primary {
     background: #FFFFFF;
     color: #000000;
-    clip-path: polygon(
-        12px 0,
-        calc(100% - 12px) 0,
-        100% 12px,
-        100% calc(100% - 12px),
-        calc(100% - 12px) 100%,
-        12px 100%,
-        0 calc(100% - 12px),
-        0 12px
-    );
+    border-radius: var(--radius-lg);
     box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
 }
 
-.btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    clip-path: polygon(
-        12px 0,
-        calc(100% - 12px) 0,
-        100% 12px,
-        100% calc(100% - 12px),
-        calc(100% - 12px) 100%,
-        12px 100%,
-        0 calc(100% - 12px),
-        0 12px
-    );
-    z-index: -1;
-}
-
 .btn-primary:hover {
-    color: #FFFFFF;
+    color: #000000;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
-}
-
-.btn-primary:hover::before {
-    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
 }
 
 /* Secondary Button - Glassmorphism */
@@ -270,7 +234,7 @@ body {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(255, 255, 255, 0.2);
 }
 
 .btn-icon {
@@ -360,7 +324,7 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: #FFFFFF;
     transition: width 0.3s ease;
 }
 
@@ -886,6 +850,10 @@ body {
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
     /* Navigation */
+    .nav-container {
+        padding: 0 20px;
+    }
+
     .nav-links {
         display: none;
     }
@@ -900,24 +868,37 @@ body {
     }
     
     /* Hero */
+    .hero {
+        padding: 100px 0 80px;
+    }
+
     .hero-container {
         grid-template-columns: 1fr;
-        gap: var(--space-xl);
+        gap: 48px;
         text-align: center;
+        padding: 0 20px;
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+        max-width: 100%;
     }
     
     .hero-cta {
         flex-direction: column;
         align-items: center;
+        gap: 14px;
     }
     
     .hero-cta .btn {
         width: 100%;
-        max-width: 280px;
+        max-width: 320px;
+        padding: 16px 28px;
+        font-size: 0.9375rem;
     }
     
     .hero-stats {
@@ -937,26 +918,60 @@ body {
     }
     
     /* Features */
+    .features {
+        padding: 60px 0;
+    }
+
+    .features-container {
+        padding: 0 20px;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        margin-bottom: 14px;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 32px;
+    }
+
     .features-grid {
         grid-template-columns: 1fr;
-        gap: var(--space-lg);
+        gap: 20px;
     }
     
     .feature-card {
-        padding: var(--space-xl);
+        padding: 28px 24px;
+    }
+
+    .feature-title {
+        font-size: 1.125rem;
+    }
+
+    .feature-description {
+        font-size: 0.9375rem;
     }
     
     /* Preview */
+    .preview {
+        padding: 60px 0;
+    }
+
+    .preview-container {
+        padding: 0 20px;
+    }
+
     .preview-phones {
         flex-direction: column;
         align-items: center;
-        gap: var(--space-lg);
+        gap: 32px;
     }
     
     .phone-left,
     .phone-right {
         transform: none;
-        scale: 0.8;
+        scale: 0.85;
     }
     
     .phone-center {
@@ -964,30 +979,63 @@ body {
     }
     
     /* Download */
+    .download {
+        padding: 60px 0;
+    }
+
+    .download-container {
+        padding: 0 20px;
+    }
+
+    .download-title {
+        font-size: 2rem;
+        margin-bottom: 16px;
+    }
+
+    .download-subtitle {
+        font-size: 1rem;
+        margin-bottom: 32px;
+    }
+
     .download-buttons {
         flex-direction: column;
         align-items: center;
+        gap: 16px;
+    }
+
+    .download-btn {
+        width: 100%;
+        max-width: 320px;
     }
     
     .download-info {
         flex-direction: column;
-        gap: var(--space-lg);
+        gap: 16px;
     }
     
     /* Footer */
+    .footer {
+        padding: 50px 0 20px;
+    }
+
+    .footer-container {
+        padding: 0 20px;
+    }
+
     .footer-content {
         grid-template-columns: 1fr;
-        gap: var(--space-xl);
+        gap: 32px;
+        margin-bottom: 32px;
     }
     
     .footer-links {
         grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-lg);
+        gap: 24px;
     }
     
     .footer-bottom-content {
         flex-direction: column;
-        gap: var(--space-lg);
+        gap: 20px;
         text-align: center;
     }
     
@@ -998,28 +1046,71 @@ body {
 }
 
 @media (max-width: 480px) {
+    /* Navigation */
+    .nav-container {
+        padding: 0 16px;
+        height: 64px;
+    }
+
+    .nav-logo {
+        width: 90px;
+        max-height: 32px;
+    }
+
     /* Typography */
+    .hero {
+        padding: 90px 0 60px;
+    }
+
+    .hero-container {
+        padding: 0 16px;
+        gap: 40px;
+    }
+
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
+        margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9375rem;
+        margin-bottom: 28px;
+    }
+
+    .hero-cta .btn {
+        max-width: 100%;
+        padding: 15px 24px;
+        font-size: 0.875rem;
+        min-height: 48px;
     }
     
     .section-title {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.9375rem;
     }
     
     .download-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
     
     /* Spacing */
-    .hero {
-        padding: 100px 0 60px;
-    }
-    
     .features,
     .preview,
     .download {
-        padding: 60px 0;
+        padding: 50px 0;
+    }
+
+    .features-container,
+    .preview-container,
+    .download-container {
+        padding: 0 16px;
+    }
+
+    .section-header {
+        margin-bottom: 32px;
     }
     
     /* Hero Video */
@@ -1033,10 +1124,138 @@ body {
         width: 200px;
         height: 400px;
     }
+
+    .phone-left,
+    .phone-right {
+        scale: 0.75;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        padding: 24px 20px;
+    }
+
+    .feature-icon {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 16px;
+    }
+
+    .feature-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .feature-title {
+        font-size: 1.0625rem;
+        margin-bottom: 10px;
+    }
+
+    .feature-description {
+        font-size: 0.875rem;
+    }
+
+    /* Download */
+    .download-btn {
+        max-width: 100%;
+        padding: 16px 24px;
+    }
+
+    .download-btn-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .download-btn-label {
+        font-size: 0.6875rem;
+    }
+
+    .download-btn-store {
+        font-size: 0.9375rem;
+    }
+
+    .info-item {
+        font-size: 0.8125rem;
+    }
     
     /* Footer */
+    .footer {
+        padding: 40px 0 16px;
+    }
+
+    .footer-container {
+        padding: 0 16px;
+    }
+
+    .footer-logo {
+        width: 90px;
+        max-height: 36px;
+    }
+
+    .footer-description {
+        font-size: 0.875rem;
+    }
+
+    .footer-developer {
+        font-size: 0.8125rem;
+    }
+
     .footer-links {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .footer-section-title {
+        font-size: 0.8125rem;
+    }
+
+    .footer-link {
+        font-size: 0.8125rem;
+    }
+
+    .footer-copyright {
+        font-size: 0.8125rem;
+    }
+
+    .social-link {
+        width: 36px;
+        height: 36px;
+    }
+
+    .social-link svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .section-title {
+        font-size: 1.375rem;
+    }
+
+    .download-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-cta .btn {
+        padding: 14px 20px;
+        font-size: 0.8125rem;
+    }
+
+    .feature-card {
+        padding: 20px 16px;
+    }
+
+    .download-btn {
+        padding: 14px 20px;
     }
 }
 
