@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Tracking System - NEXAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+            color: white;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .console-log {
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #0f0;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+        
+        .log-entry {
+            margin-bottom: 4px;
+        }
+        
+        .success {
+            color: #0f0;
+        }
+        
+        .info {
+            color: #0ff;
+        }
+        
+        .warning {
+            color: #ff0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Tracking System Test</h1>
+        <p class="subtitle">Test download and page view tracking functionality</p>
+        
+        <!-- Current Stats -->
+        <div class="card">
+            <h2>📊 Current Statistics</h2>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-label">APK Downloads</div>
+                    <div class="stat-value" id="apkCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">IPA Downloads</div>
+                    <div class="stat-value" id="ipaCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Manual Views</div>
+                    <div class="stat-value" id="manualCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Contacts</div>
+                    <div class="stat-value" id="contactCount">0</div>
+                </div>
+            </div>
+            <button class="btn btn-outline" onclick="refreshStats()">🔄 Refresh Stats</button>
+        </div>
+        
+        <!-- Test Actions -->
+        <div class="card">
+            <h2>🎯 Test Actions</h2>
+            <button class="btn" onclick="simulateAPKDownload()">📱 Simulate APK Download</button>
+            <button class="btn" onclick="simulateIPADownload()">🍎 Simulate IPA Download</button>
+            <button class="btn" onclick="simulateManualView()">📖 Simulate Manual View</button>
+            <button class="btn btn-outline" onclick="resetAllCounters()">🗑️ Reset All Counters</button>
+        </div>
+        
+        <!-- Console Log -->
+        <div class="card">
+            <h2>📝 Console Log</h2>
+            <div class="console-log" id="consoleLog">
+                <div class="log-entry info">System initialized. Ready for testing.</div>
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="card">
+            <h2>🔗 Quick Links</h2>
+            <a href="index.html" class="btn btn-outline">Go to Homepage</a>
+            <a href="manual.html" class="btn btn-outline">Go to Manual</a>
+            <a href="admin.html" class="btn btn-outline">Go to Admin Panel</a>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize counters
+        function initializeCounters() {
+            if (!localStorage.getItem('nexad_apk_downloads')) {
+                localStorage.setItem('nexad_apk_downloads', '0');
+            }
+            if (!localStorage.getItem('nexad_ipa_downloads')) {
+                localStorage.setItem('nexad_ipa_downloads', '0');
+            }
+            if (!localStorage.getItem('nexad_manual_views')) {
+                localStorage.setItem('nexad_manual_views', '0');
+            }
+            if (!localStorage.getItem('nexad_contacts')) {
+                localStorage.setItem('nexad_contacts', '[]');
+            }
+        }
+        
+        // Log to console
+        function log(message, type = 'info') {
+            const consoleLog = document.getElementById('consoleLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleLog.appendChild(entry);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+            console.log(message);
+        }
+        
+        // Refresh stats
+        function refreshStats() {
+            const apkCount = parseInt(localStorage.getItem('nexad_apk_downloads') || '0');
+            const ipaCount = parseInt(localStorage.getItem('nexad_ipa_downloads') || '0');
+            const manualCount = parseInt(localStorage.getItem('nexad_manual_views') || '0');
+            const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
+            
+            document.getElementById('apkCount').textContent = apkCount;
+            document.getElementById('ipaCount').textContent = ipaCount;
+            document.getElementById('manualCount').textContent = manualCount;
+            document.getElementById('contactCount').textContent = contacts.length;
+            
+            log('Stats refreshed', 'success');
+        }
+        
+        // Simulate APK download
+        function simulateAPKDownload() {
+            const currentCount = parseInt(localStorage.getItem('nexad_apk_downloads') || '0');
+            const newCount = currentCount + 1;
+            localStorage.setItem('nexad_apk_downloads', newCount.toString());
+            log(`📱 APK download tracked: ${newCount}`, 'success');
+            refreshStats();
+        }
+        
+        // Simulate IPA download
+        function simulateIPADownload() {
+            const currentCount = parseInt(localStorage.getItem('nexad_ipa_downloads') || '0');
+            const newCount = currentCount + 1;
+            localStorage.setItem('nexad_ipa_downloads', newCount.toString());
+            log(`🍎 IPA download tracked: ${newCount}`, 'success');
+            refreshStats();
+        }
+        
+        // Simulate manual view
+        function simulateManualView() {
+            const currentCount = parseInt(localStorage.getItem('nexad_manual_views') || '0');
+            const newCount = currentCount + 1;
+            localStorage.setItem('nexad_manual_views', newCount.toString());
+            log(`📖 Manual view tracked: ${newCount}`, 'success');
+            refreshStats();
+        }
+        
+        // Reset all counters
+        function resetAllCounters() {
+            if (confirm('Are you sure you want to reset all counters? This cannot be undone.')) {
+                localStorage.setItem('nexad_apk_downloads', '0');
+                localStorage.setItem('nexad_ipa_downloads', '0');
+                localStorage.setItem('nexad_manual_views', '0');
+                log('🗑️ All counters reset to 0', 'warning');
+                refreshStats();
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCounters();
+            refreshStats();
+            log('✅ Tracking system initialized', 'success');
+        });
+    </script>
+</body>
+</html>

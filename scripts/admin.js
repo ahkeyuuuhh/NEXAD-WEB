@@ -1,10 +1,14 @@
-// Admin Dashboard JavaScript - Secure Authentication
+// Admin Dashboard JavaScript - Dynamic Statistics
 // Only allows nexad.support@gmail.com to access
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
 
 // Admin email whitelist
 const ADMIN_EMAIL = 'nexad.support@gmail.com';
+
+// Download URLs
+const APK_URL = 'https://expo.dev/artifacts/eas/jy8mSzY1mcXU3dk5Xkxfb.apk';
+const IPA_URL = ''; // Will be added when IPA is built
 
 let supabase = null;
 let currentAdmin = null;
@@ -33,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function checkAdminSession() {
     if (!supabase) {
         console.error('❌ Supabase not initialized');
+        showLoginScreen();
         return;
     }
     
@@ -41,52 +46,69 @@ async function checkAdminSession() {
         
         // Check for OAuth tokens in URL
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
+        const queryParams = new URLSearchParams(window.location.search);
+        
+        const accessToken = hashParams.get('access_token') || queryParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token') || queryParams.get('refresh_token');
+        const error = hashParams.get('error') || queryParams.get('error');
+        
+        if (error) {
+            console.error('🔴 [Admin] OAuth error:', error);
+            const errorDesc = hashParams.get('error_description') || queryParams.get('error_description');
+            showError('Authentication failed: ' + (errorDesc || error));
+            showLoginScreen();
+            return;
+        }
         
         if (accessToken) {
             console.log('🟢 [Admin] Found OAuth tokens in URL');
+            showLoading('Verifying admin access...');
             
-            const { data, error } = await supabase.auth.setSession({
+            const { data, error: sessionError } = await supabase.auth.setSession({
                 access_token: accessToken,
                 refresh_token: refreshToken || ''
             });
             
-            if (error) {
-                console.error('🔴 [Admin] Error setting session:', error);
+            if (sessionError) {
+                console.error('🔴 [Admin] Error setting session:', sessionError);
+                hideLoading();
                 showError('Authentication failed. Please try again.');
+                showLoginScreen();
                 return;
             }
             
             if (data.session && data.session.user) {
                 console.log('🟢 [Admin] Session set for:', data.session.user.email);
-                
-                // Clean up URL
                 window.history.replaceState({}, document.title, window.location.pathname);
-                
-                // Verify admin email
                 await verifyAndShowDashboard(data.session.user);
+                hideLoading();
                 return;
             }
+            hideLoading();
         }
         
         // Check for existing session
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: getSessionError } = await supabase.auth.getSession();
         
-        if (error) {
-            console.error('🔴 [Admin] Error checking session:', error);
+        if (getSessionError) {
+            console.error('🔴 [Admin] Error checking session:', getSessionError);
+            showLoginScreen();
             return;
         }
 
         if (session && session.user) {
             console.log('🟢 [Admin] Existing session found:', session.user.email);
+            showLoading('Loading dashboard...');
             await verifyAndShowDashboard(session.user);
+            hideLoading();
         } else {
             console.log('🟡 [Admin] No existing session found');
             showLoginScreen();
         }
     } catch (error) {
         console.error('🔴 [Admin] Exception:', error);
+        hideLoading();
+        showError('An error occurred. Please refresh the page.');
         showLoginScreen();
     }
 }
@@ -95,14 +117,9 @@ async function checkAdminSession() {
 async function verifyAndShowDashboard(user) {
     console.log('🔍 [Admin] Verifying admin email:', user.email);
     
-    // Check if email matches admin email
     if (user.email !== ADMIN_EMAIL) {
         console.error('🔴 [Admin] Unauthorized email:', user.email);
-        
-        // Sign out unauthorized user
         await supabase.auth.signOut();
-        
-        // Show error
         showError(`Access Denied: Only ${ADMIN_EMAIL} can access this admin panel.`);
         showLoginScreen();
         return;
@@ -121,8 +138,55 @@ async function verifyAndShowDashboard(user) {
 
 // Show login screen
 function showLoginScreen() {
-    document.getElementById('adminLogin').style.display = 'flex';
-    document.getElementById('adminDashboard').style.display = 'none';
+    const loginDiv = document.getElementById('adminLogin');
+    const dashboardDiv = document.getElementById('adminDashboard');
+    
+    if (loginDiv) loginDiv.style.display = 'flex';
+    if (dashboardDiv) dashboardDiv.style.display = 'none';
+    
+    const loadingIndicator = document.querySelector('.loading-indicator');
+    if (loadingIndicator) loadingIndicator.remove();
+}
+
+// Show loading indicator
+function showLoading(message = 'Loading...') {
+    const existingLoading = document.querySelector('.loading-indicator');
+    if (existingLoading) existingLoading.remove();
+    
+    const loading = document.createElement('div');
+    loading.className = 'loading-indicator';
+    loading.innerHTML = `
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>${message}</p>
+        </div>
+    `;
+    loading.style.cssText = `
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.9); display: flex;
+        align-items: center; justify-content: center; z-index: 10000;
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        .loading-content { text-align: center; color: white; }
+        .loading-content .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white; border-radius: 50%;
+            width: 50px; height: 50px; animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .loading-content p { font-size: 16px; margin: 0; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(loading);
+}
+
+// Hide loading indicator
+function hideLoading() {
+    const loading = document.querySelector('.loading-indicator');
+    if (loading) loading.remove();
 }
 
 // Show dashboard
@@ -130,42 +194,30 @@ function showDashboard() {
     document.getElementById('adminLogin').style.display = 'none';
     document.getElementById('adminDashboard').style.display = 'block';
     
-    // Update admin profile
     if (currentAdmin) {
         const adminName = document.getElementById('adminName');
         const adminAvatar = document.getElementById('adminAvatar');
         
-        if (adminName) {
-            adminName.textContent = currentAdmin.name;
-        }
+        if (adminName) adminName.textContent = currentAdmin.name;
         
         if (adminAvatar && currentAdmin.picture) {
             adminAvatar.src = currentAdmin.picture;
         } else if (adminAvatar) {
-            // Default avatar
             adminAvatar.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Ccircle cx="20" cy="20" r="20" fill="%23667eea"/%3E%3Ctext x="20" y="26" font-size="16" fill="white" text-anchor="middle" font-family="Arial"%3E' + currentAdmin.name.charAt(0).toUpperCase() + '%3C/text%3E%3C/svg%3E';
         }
     }
     
-    // Load dashboard data
     loadDashboardData();
 }
 
 // Setup event listeners
 function setupEventListeners() {
-    // Login button (we'll add this to HTML)
     const loginBtn = document.getElementById('adminLoginBtn');
-    if (loginBtn) {
-        loginBtn.addEventListener('click', handleAdminLogin);
-    }
+    if (loginBtn) loginBtn.addEventListener('click', handleAdminLogin);
     
-    // Logout button
     const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-    }
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     
-    // Navigation buttons
     const navBtns = document.querySelectorAll('.nav-btn');
     navBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -174,23 +226,8 @@ function setupEventListeners() {
         });
     });
     
-    // Export contacts button
     const exportBtn = document.getElementById('exportContacts');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', exportContacts);
-    }
-    
-    // Mark all read button
-    const markAllReadBtn = document.getElementById('markAllRead');
-    if (markAllReadBtn) {
-        markAllReadBtn.addEventListener('click', markAllContactsRead);
-    }
-    
-    // Save manual button
-    const saveManualBtn = document.getElementById('saveManual');
-    if (saveManualBtn) {
-        saveManualBtn.addEventListener('click', saveManualContent);
-    }
+    if (exportBtn) exportBtn.addEventListener('click', exportContacts);
 }
 
 // Handle admin login
@@ -222,7 +259,6 @@ async function handleAdminLogin() {
                 queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',
-                    hd: 'gmail.com' // Hint to use Gmail accounts
                 }
             }
         });
@@ -246,7 +282,7 @@ async function handleAdminLogin() {
         
         if (loginBtn) {
             loginBtn.disabled = false;
-            loginBtn.textContent = 'Sign in with Google';
+            loginBtn.innerHTML = '<svg class="google-icon" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>Sign in with Google</span>';
         }
     }
 }
@@ -255,9 +291,7 @@ async function handleAdminLogin() {
 async function handleLogout() {
     console.log('🔵 [Admin] Logging out...');
     
-    if (supabase) {
-        await supabase.auth.signOut();
-    }
+    if (supabase) await supabase.auth.signOut();
     
     currentAdmin = null;
     showLoginScreen();
@@ -267,23 +301,18 @@ async function handleLogout() {
 
 // Show section
 function showSection(sectionId) {
-    // Update navigation
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
     
-    // Update sections
-    document.querySelectorAll('.admin-section').forEach(section => {
-        section.classList.remove('active');
-    });
+    document.querySelectorAll('.admin-section').forEach(section => section.classList.remove('active'));
     document.getElementById(sectionId)?.classList.add('active');
 }
 
 // Load dashboard data
 function loadDashboardData() {
     loadContacts();
-    updateStats();
+    loadDownloadStats();
+    loadManualViews();
     loadRecentActivity();
 }
 
@@ -293,21 +322,77 @@ function loadContacts() {
         const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
         console.log('📧 Loaded contacts:', contacts.length);
         
-        // Update count
         const contactsCount = document.getElementById('contactsCount');
         const totalContacts = document.getElementById('totalContacts');
+        const contactSubmissions = document.getElementById('contactSubmissions');
         
-        if (contactsCount) {
-            contactsCount.textContent = contacts.length;
-        }
-        if (totalContacts) {
-            totalContacts.textContent = contacts.length;
-        }
+        if (contactsCount) contactsCount.textContent = contacts.length;
+        if (totalContacts) totalContacts.textContent = contacts.length;
+        if (contactSubmissions) contactSubmissions.textContent = contacts.length;
         
-        // Display contacts
         displayContacts(contacts);
     } catch (error) {
         console.error('❌ Error loading contacts:', error);
+    }
+}
+
+// Load download statistics
+function loadDownloadStats() {
+    try {
+        // Get download counts from localStorage
+        const apkDownloads = parseInt(localStorage.getItem('nexad_apk_downloads') || '0');
+        const ipaDownloads = parseInt(localStorage.getItem('nexad_ipa_downloads') || '0');
+        const totalDownloads = apkDownloads + ipaDownloads;
+        
+        console.log('📊 Download stats - APK:', apkDownloads, 'IPA:', ipaDownloads, 'Total:', totalDownloads);
+        
+        // Update overview stats
+        const totalDownloadsEl = document.getElementById('totalDownloads');
+        if (totalDownloadsEl) totalDownloadsEl.textContent = totalDownloads;
+        
+        // Update analytics section
+        const apkDownloadsEl = document.getElementById('apkDownloads');
+        const ipaDownloadsEl = document.getElementById('ipaDownloads');
+        const totalDownloadsAnalytics = document.getElementById('totalDownloadsAnalytics');
+        
+        if (apkDownloadsEl) apkDownloadsEl.textContent = apkDownloads;
+        if (ipaDownloadsEl) ipaDownloadsEl.textContent = ipaDownloads;
+        if (totalDownloadsAnalytics) totalDownloadsAnalytics.textContent = totalDownloads;
+        
+        // Calculate percentages
+        const apkPercentage = totalDownloads > 0 ? Math.round((apkDownloads / totalDownloads) * 100) : 0;
+        const ipaPercentage = totalDownloads > 0 ? Math.round((ipaDownloads / totalDownloads) * 100) : 0;
+        
+        // Update progress bars
+        const apkProgress = document.getElementById('apkProgress');
+        const ipaProgress = document.getElementById('ipaProgress');
+        const apkPercentageEl = document.getElementById('apkPercentage');
+        const ipaPercentageEl = document.getElementById('ipaPercentage');
+        
+        if (apkProgress) apkProgress.style.width = apkPercentage + '%';
+        if (ipaProgress) ipaProgress.style.width = ipaPercentage + '%';
+        if (apkPercentageEl) apkPercentageEl.textContent = apkPercentage + '%';
+        if (ipaPercentageEl) ipaPercentageEl.textContent = ipaPercentage + '%';
+        
+    } catch (error) {
+        console.error('❌ Error loading download stats:', error);
+    }
+}
+
+// Load manual views
+function loadManualViews() {
+    try {
+        const manualViews = parseInt(localStorage.getItem('nexad_manual_views') || '0');
+        console.log('📖 Manual views:', manualViews);
+        
+        const manualViewsEl = document.getElementById('manualViews');
+        const manualViewsAnalytics = document.getElementById('manualViewsAnalytics');
+        
+        if (manualViewsEl) manualViewsEl.textContent = manualViews;
+        if (manualViewsAnalytics) manualViewsAnalytics.textContent = manualViews;
+        
+    } catch (error) {
+        console.error('❌ Error loading manual views:', error);
     }
 }
 
@@ -341,13 +426,6 @@ function displayContacts(contacts) {
             </div>
         </div>
     `).join('');
-}
-
-// Update stats
-function updateStats() {
-    // These would normally come from a backend API
-    // For now, using placeholder data
-    console.log('📊 Updating stats...');
 }
 
 // Load recent activity
@@ -388,7 +466,6 @@ function exportContacts() {
         return;
     }
     
-    // Create CSV content
     const headers = ['Name', 'Email', 'Message', 'Timestamp'];
     const rows = contacts.map(c => [
         c.name || '',
@@ -402,7 +479,6 @@ function exportContacts() {
         ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
     
-    // Download CSV
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -412,26 +488,6 @@ function exportContacts() {
     URL.revokeObjectURL(url);
     
     console.log('✅ Contacts exported');
-}
-
-// Mark all contacts as read
-function markAllContactsRead() {
-    console.log('✅ All contacts marked as read');
-    alert('All contacts marked as read');
-}
-
-// Save manual content
-function saveManualContent() {
-    const section = document.getElementById('manualSection').value;
-    const content = document.getElementById('manualEditor').value;
-    
-    // Save to localStorage (in production, this would go to a backend)
-    const manualData = JSON.parse(localStorage.getItem('nexad_manual') || '{}');
-    manualData[section] = content;
-    localStorage.setItem('nexad_manual', JSON.stringify(manualData));
-    
-    console.log('✅ Manual content saved');
-    alert('Manual content saved successfully!');
 }
 
 // Reply to contact
@@ -451,6 +507,7 @@ window.deleteContact = function(index) {
         contacts.splice(index, 1);
         localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
         loadContacts();
+        loadRecentActivity();
         console.log('✅ Contact deleted');
     }
 };
@@ -460,32 +517,16 @@ function showError(message) {
     const loginCard = document.querySelector('.login-card');
     if (!loginCard) return;
     
-    // Remove existing error
     const existingError = loginCard.querySelector('.error-message');
-    if (existingError) {
-        existingError.remove();
-    }
+    if (existingError) existingError.remove();
     
-    // Add new error
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
     errorDiv.textContent = message;
-    errorDiv.style.cssText = `
-        background: #fee;
-        color: #c33;
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-top: 16px;
-        font-size: 14px;
-        border: 1px solid #fcc;
-    `;
     
     loginCard.appendChild(errorDiv);
     
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        errorDiv.remove();
-    }, 5000);
+    setTimeout(() => errorDiv.remove(), 5000);
 }
 
 console.log('✅ Admin.js fully loaded and ready');

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Test - NEXAD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { font-size: 28px; margin-bottom: 10px; color: #333; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .status.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        
+        .google-btn {
+            width: 100%;
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 50px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #3c4043;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s;
+            margin: 20px 0;
+        }
+        .google-btn:hover { background: #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .google-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .console {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .log { margin: 3px 0; padding: 2px 0; }
+        .log.error { color: #f48771; }
+        .log.success { color: #89d185; }
+        .log.info { color: #75beff; }
+        .log.warning { color: #f4d771; }
+        
+        .dashboard {
+            display: none;
+            text-align: center;
+        }
+        .dashboard.active { display: block; }
+        .dashboard h2 { color: #667eea; margin: 20px 0; }
+        .dashboard p { color: #666; margin: 10px 0; }
+        .dashboard .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .dashboard .user-info strong { color: #333; }
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        .logout-btn:hover { background: #dc2626; }
+        
+        .config-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .config-warning strong { display: block; margin-bottom: 8px; }
+        .config-warning code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginSection">
+            <h1>🔐 Admin Test</h1>
+            <p class="subtitle">Testing admin authentication for NEXAD</p>
+            
+            <div id="status-container"></div>
+            
+            <div class="config-warning">
+                <strong>⚠️ Configuration Required:</strong>
+                Before this works, you need to add this URL to Supabase:<br>
+                <code>http://localhost:8080/admin-test.html</code><br><br>
+                Go to: Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
+            </div>
+            
+            <button id="googleBtn" class="google-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span>Sign in with Google</span>
+            </button>
+            
+            <div class="console" id="console"></div>
+        </div>
+        
+        <div id="dashboardSection" class="dashboard">
+            <h2>✅ Admin Access Granted!</h2>
+            <div class="user-info">
+                <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                <p><strong>Name:</strong> <span id="userName"></span></p>
+                <p><strong>Status:</strong> <span style="color: #22c55e;">Authorized Admin</span></p>
+            </div>
+            <p>You have successfully authenticated as an admin.</p>
+            <p>This proves the authentication system is working!</p>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
+        
+        const ADMIN_EMAIL = 'nexad.support@gmail.com';
+        const statusContainer = document.getElementById('status-container');
+        const consoleEl = document.getElementById('console');
+        const googleBtn = document.getElementById('googleBtn');
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        
+        let supabase;
+        let currentUser = null;
+        
+        function addStatus(message, type = 'info') {
+            const status = document.createElement('div');
+            status.className = `status ${type}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            status.innerHTML = `<span>${icon} ${message}</span>`;
+            statusContainer.appendChild(status);
+        }
+        
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log ${type}`;
+            logEntry.textContent = `[${time}] ${message}`;
+            consoleEl.appendChild(logEntry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            console.log(message);
+        }
+        
+        // Initialize
+        log('🚀 Initializing admin test...');
+        
+        try {
+            const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
+            
+            supabase = createClient(supabaseUrl, supabaseKey);
+            log('✅ Supabase client created', 'success');
+            addStatus('Supabase initialized', 'success');
+            
+        } catch (error) {
+            log('❌ Failed to initialize: ' + error.message, 'error');
+            addStatus('Failed to initialize: ' + error.message, 'error');
+            googleBtn.disabled = true;
+        }
+        
+        // Check for OAuth callback
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token')) {
+            log('🔄 Processing OAuth callback...', 'info');
+            addStatus('Processing authentication...', 'info');
+            
+            const params = new URLSearchParams(hash.substring(1));
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+            const error = params.get('error');
+            
+            if (error) {
+                log('❌ OAuth error: ' + error, 'error');
+                const errorDesc = params.get('error_description');
+                addStatus('OAuth error: ' + (errorDesc || error), 'error');
+                
+                if (error === 'access_denied') {
+                    addStatus('You cancelled the sign-in', 'warning');
+                }
+            } else if (accessToken) {
+                log('✅ Found access token', 'success');
+                
+                supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken || ''
+                }).then(({ data, error }) => {
+                    if (error) {
+                        log('❌ Session error: ' + error.message, 'error');
+                        addStatus('Session error: ' + error.message, 'error');
+                    } else if (data.session) {
+                        const user = data.session.user;
+                        log('✅ Session created for: ' + user.email, 'success');
+                        
+                        // Check if admin email
+                        if (user.email === ADMIN_EMAIL) {
+                            log('✅ Admin email verified!', 'success');
+                            addStatus('Admin access granted!', 'success');
+                            
+                            currentUser = {
+                                email: user.email,
+                                name: user.user_metadata?.full_name || user.email.split('@')[0]
+                            };
+                            
+                            // Show dashboard
+                            loginSection.style.display = 'none';
+                            dashboardSection.classList.add('active');
+                            document.getElementById('userEmail').textContent = currentUser.email;
+                            document.getElementById('userName').textContent = currentUser.name;
+                            
+                        } else {
+                            log('❌ Unauthorized email: ' + user.email, 'error');
+                            addStatus('Access Denied: Only ' + ADMIN_EMAIL + ' can access', 'error');
+                            
+                            // Sign out
+                            supabase.auth.signOut();
+                        }
+                        
+                        // Clean URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                });
+            }
+        } else {
+            log('ℹ️ No OAuth callback detected', 'info');
+            addStatus('Ready to sign in', 'info');
+        }
+        
+        // Button click handler
+        googleBtn.addEventListener('click', async () => {
+            log('🖱️ Sign in button clicked');
+            
+            googleBtn.disabled = true;
+            googleBtn.innerHTML = '<span>Signing in...</span>';
+            
+            try {
+                log('🔵 Starting OAuth flow...');
+                
+                const redirectTo = window.location.origin + window.location.pathname;
+                log('🔵 Redirect URL: ' + redirectTo);
+                log('⚠️ Make sure this URL is in Supabase redirect URLs!', 'warning');
+                
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: redirectTo,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent'
+                        }
+                    }
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (data && data.url) {
+                    log('✅ OAuth URL received', 'success');
+                    log('🔵 Redirecting to Google...', 'info');
+                    addStatus('Redirecting to Google...', 'info');
+                } else {
+                    throw new Error('No OAuth URL returned');
+                }
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+                addStatus('Error: ' + error.message, 'error');
+                
+                googleBtn.disabled = false;
+                googleBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span>Sign in with Google</span>
+                `;
+            }
+        });
+        
+        // Logout handler
+        window.handleLogout = async function() {
+            log('🔵 Logging out...');
+            await supabase.auth.signOut();
+            currentUser = null;
+            loginSection.style.display = 'block';
+            dashboardSection.classList.remove('active');
+            statusContainer.innerHTML = '';
+            addStatus('Logged out successfully', 'success');
+            log('✅ Logged out', 'success');
+        };
+        
+        log('✅ Ready!', 'success');
+    </script>
+</body>
+</html>
