@@ -43,19 +43,6 @@ function initializeContactPage() {
 function setupEventListeners() {
     console.log('🔧 Setting up event listeners...');
     
-    // Google Sign-In button
-    const googleSignInBtn = document.getElementById('googleSignInBtn');
-    if (googleSignInBtn) {
-        console.log('✅ Found Google Sign-In button');
-        googleSignInBtn.addEventListener('click', function(e) {
-            console.log('🖱️ Button clicked!');
-            e.preventDefault();
-            handleGoogleSignIn();
-        });
-    } else {
-        console.error('❌ Google Sign-In button not found!');
-    }
-
     // Contact form submission
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
@@ -86,54 +73,20 @@ function setupEventListeners() {
 async function checkExistingSession() {
     if (!supabase) {
         console.error('❌ Supabase not initialized');
+        // Redirect to login page if not authenticated
+        window.location.href = 'login.html';
         return;
     }
     
     try {
         console.log('🔵 [Session] Checking for existing session...');
         
-        // Check for OAuth tokens in URL
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const queryParams = new URLSearchParams(window.location.search);
-        
-        const accessToken = hashParams.get('access_token') || queryParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token') || queryParams.get('refresh_token');
-        
-        if (accessToken) {
-            console.log('🟢 [Session] Found OAuth tokens in URL');
-            
-            const { data, error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken || ''
-            });
-            
-            if (error) {
-                console.error('🔴 [Session] Error setting session:', error);
-                showNotification('Authentication failed. Please try again.', 'error');
-                return;
-            }
-            
-            if (data.session && data.session.user) {
-                console.log('🟢 [Session] Session set successfully:', data.session.user.email);
-                currentUser = {
-                    name: data.session.user.user_metadata?.full_name || data.session.user.email?.split('@')[0] || 'User',
-                    email: data.session.user.email,
-                    picture: data.session.user.user_metadata?.avatar_url || null
-                };
-                
-                // Clean up URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-                
-                showContactForm();
-                return;
-            }
-        }
-        
         // Check for existing session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
             console.error('🔴 [Session] Error checking session:', error);
+            window.location.href = 'login.html';
             return;
         }
 
@@ -144,95 +97,86 @@ async function checkExistingSession() {
                 email: session.user.email,
                 picture: session.user.user_metadata?.avatar_url || null
             };
+            
+            // Update nav link to show logout
+            updateNavLink();
             showContactForm();
         } else {
-            console.log('🟡 [Session] No existing session found');
+            console.log('🟡 [Session] No existing session found, redirecting to login...');
+            window.location.href = 'login.html';
         }
     } catch (error) {
         console.error('🔴 [Session] Exception:', error);
+        window.location.href = 'login.html';
     }
 }
 
-// Handle Google Sign-In
-async function handleGoogleSignIn() {
-    console.log('🚀 handleGoogleSignIn called!');
-    
-    if (!supabase) {
-        console.error('❌ Supabase not initialized!');
-        showNotification('Authentication system not ready. Please refresh the page.', 'error');
-        return;
-    }
-    
-    const googleSignInBtn = document.getElementById('googleSignInBtn');
-    if (!googleSignInBtn) {
-        console.error('❌ Button element not found!');
-        return;
-    }
-    
-    const originalText = googleSignInBtn.innerHTML;
-    
-    try {
-        googleSignInBtn.disabled = true;
-        googleSignInBtn.innerHTML = '<span>Signing in...</span>';
-        
-        console.log('🔵 [OAuth] Starting Google OAuth...');
-        
-        const redirectTo = window.location.origin + window.location.pathname;
-        console.log('🔵 [OAuth] Redirect URL:', redirectTo);
-        
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: redirectTo,
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
-                }
-            }
+// Update navigation link
+function updateNavLink() {
+    const loginNavLink = document.getElementById('loginNavLink');
+    if (loginNavLink && currentUser) {
+        loginNavLink.textContent = 'Logout';
+        loginNavLink.href = '#';
+        loginNavLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            handleLogout();
         });
-
-        if (error) {
-            console.error('🔴 [OAuth] Error:', error);
-            throw error;
-        }
-        
-        if (!data?.url) {
-            console.error('🔴 [OAuth] No OAuth URL returned');
-            throw new Error('Failed to get Google sign-in URL');
-        }
-
-        console.log('🟢 [OAuth] OAuth URL received');
-        console.log('🔵 [OAuth] Redirecting to Google...');
-        
-    } catch (error) {
-        console.error('🔴 [OAuth] Error:', error);
-        
-        showNotification(
-            'Sign-in failed: ' + (error.message || 'Please try again'),
-            'error'
-        );
-        
-        googleSignInBtn.disabled = false;
-        googleSignInBtn.innerHTML = originalText;
     }
 }
+
+
 
 // Show contact form after authentication
 function showContactForm() {
-    const authSection = document.getElementById('authSection');
     const contactForm = document.getElementById('contactForm');
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
+    const userInfoDisplay = document.getElementById('userInfoDisplay');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+    const userEmailDisplay = document.getElementById('userEmailDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
     
-    if (!authSection || !contactForm) return;
+    if (!contactForm) return;
     
-    authSection.style.display = 'none';
     contactForm.style.display = 'flex';
     
-    if (currentUser) {
-        nameInput.value = currentUser.name;
-        emailInput.value = currentUser.email;
+    if (currentUser && userInfoDisplay) {
+        // Show user info
+        userInfoDisplay.style.display = 'flex';
+        
+        if (userName) userName.textContent = currentUser.name;
+        if (userEmailDisplay) userEmailDisplay.textContent = currentUser.email;
+        
+        // Set avatar
+        if (userAvatar) {
+            if (currentUser.picture) {
+                userAvatar.style.backgroundImage = `url(${currentUser.picture})`;
+                userAvatar.style.backgroundSize = 'cover';
+                userAvatar.textContent = '';
+            } else {
+                userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+            }
+        }
+        
+        // Setup logout button
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', handleLogout);
+        }
     }
+}
+
+// Handle logout
+async function handleLogout() {
+    if (supabase) {
+        await supabase.auth.signOut();
+    }
+    currentUser = null;
+    
+    showNotification('Logged out successfully', 'success');
+    
+    // Redirect to login page
+    setTimeout(() => {
+        window.location.href = 'login.html';
+    }, 1000);
 }
 
 // Handle form submission
@@ -241,12 +185,12 @@ async function handleFormSubmit(e) {
     
     const contactForm = document.getElementById('contactForm');
     const successMessage = document.getElementById('successMessage');
-    const submitBtn = contactForm.querySelector('.submit-btn-modern');
+    const submitBtn = contactForm.querySelector('.submit-btn-compact');
     
     const formData = new FormData(contactForm);
     const contactData = {
-        name: formData.get('name'),
-        email: formData.get('email'),
+        name: currentUser?.name || 'Unknown',
+        email: currentUser?.email || 'unknown@email.com',
         message: formData.get('message'),
         subject: formData.get('subject') || 'General Inquiry',
         timestamp: new Date().toISOString(),
@@ -286,34 +230,6 @@ async function handleFormSubmit(e) {
                     console.log('✅ Contact saved to database:', data);
                     savedToDatabase = true;
                     contactId = data.id;
-                    
-                    // Email notifications disabled for now
-                    // To enable: Deploy the Edge Function and uncomment the code below
-                    /*
-                    try {
-                        console.log('📧 Attempting to send email notification...');
-                        const emailResponse = await supabase.functions.invoke('send-contact-email', {
-                            body: {
-                                type: 'new_contact',
-                                contact: {
-                                    id: data.id,
-                                    name: contactData.name,
-                                    email: contactData.email,
-                                    message: contactData.message,
-                                    subject: contactData.subject
-                                }
-                            }
-                        });
-                        
-                        if (!emailResponse.error) {
-                            console.log('✅ Email notification sent');
-                        } else {
-                            console.warn('⚠️ Email notification failed:', emailResponse.error);
-                        }
-                    } catch (emailError) {
-                        console.warn('⚠️ Email notification error:', emailError);
-                    }
-                    */
                 } else {
                     console.warn('⚠️ Database save failed:', error);
                 }
@@ -338,19 +254,13 @@ async function handleFormSubmit(e) {
         
         console.log('✅ Contact form submitted successfully');
         
-        if (savedToDatabase) {
-            console.log('✅ Full system active: Database + Email notifications');
-        } else {
-            console.log('ℹ️ Fallback mode: Saved to localStorage only');
-            console.log('ℹ️ To enable database + email: Complete the Supabase setup');
-        }
-        
-        // Sign out after 3 seconds
-        setTimeout(async () => {
-            if (supabase) {
-                await supabase.auth.signOut();
-            }
-            currentUser = null;
+        // Reset form after 3 seconds and show form again (user stays logged in)
+        setTimeout(() => {
+            contactForm.reset();
+            contactForm.style.display = 'flex';
+            successMessage.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         }, 3000);
         
     } catch (error) {

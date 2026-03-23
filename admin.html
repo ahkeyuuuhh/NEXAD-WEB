@@ -97,6 +97,7 @@
 
         <!-- Main Content -->
         <main class="admin-main">
+            <div class="admin-container">
             <!-- Overview Section -->
             <section id="overview" class="admin-section active">
                 <div class="section-header">
@@ -162,15 +163,11 @@
                 </div>
                 
                 <div class="contacts-toolbar">
-                    <div class="toolbar-left">
-                        <select id="contactFilter" class="filter-select">
-                            <option value="all">All Messages</option>
-                            <option value="unread">Unread</option>
-                            <option value="read">Read</option>
-                        </select>
-                    </div>
-                    <div class="toolbar-right">
-                        <button id="exportContacts" class="btn btn-primary">Export CSV</button>
+                    <div class="contacts-tabs">
+                        <button class="tab-btn active" data-filter="all">All</button>
+                        <button class="tab-btn" data-filter="unread">Unread</button>
+                        <button class="tab-btn" data-filter="read">Read</button>
+                        <button class="tab-btn" data-filter="replied">Replied</button>
                     </div>
                 </div>
                 
@@ -238,6 +235,7 @@
                     </div>
                 </div>
             </section>
+        </div>
         </main>
     </div>
 

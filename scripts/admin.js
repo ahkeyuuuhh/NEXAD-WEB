@@ -228,8 +228,18 @@ function setupEventListeners() {
         });
     });
     
-    const exportBtn = document.getElementById('exportContacts');
-    if (exportBtn) exportBtn.addEventListener('click', exportContacts);
+    // Setup tab filtering
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            filterContacts(filter);
+            
+            // Update active tab
+            tabBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
 }
 
 // Handle admin login
@@ -467,56 +477,87 @@ function displayContacts(contacts) {
     }
     
     contactsList.innerHTML = contacts.map((contact) => {
-        // Handle both database format (created_at) and localStorage format (timestamp)
         const createdAt = contact.created_at || contact.timestamp || new Date().toISOString();
         const statusBadge = getStatusBadge(contact.status || 'unread');
         const contactId = contact.id || 'local_' + Date.now();
         const escapedMessage = (contact.message || 'No message').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
         
         return `
-        <div class="contact-card" data-contact-id="${contactId}">
-            <div class="contact-header">
-                <div class="contact-info">
-                    <h4>${contact.name || 'Unknown'}</h4>
-                    <p>${contact.email || 'No email'}</p>
-                    ${contact.subject ? `<span class="contact-subject">${contact.subject}</span>` : ''}
-                </div>
-                <div class="contact-meta">
-                    ${statusBadge}
-                    <span class="contact-date">${new Date(createdAt).toLocaleDateString()}</span>
+        <div class="contact-card ${contact.status === 'unread' ? 'unread' : ''}" data-contact-id="${contactId}" data-status="${contact.status || 'unread'}">
+            <div class="contact-card-header" onclick="toggleContactCard('${contactId}')">
+                <div class="contact-header">
+                    <div class="contact-info">
+                        <h4>${contact.name || 'Unknown'}</h4>
+                        <p>${contact.email || 'No email'}</p>
+                    </div>
+                    <div class="contact-meta">
+                        ${statusBadge}
+                        <span class="contact-date">${new Date(createdAt).toLocaleDateString()}</span>
+                        <div class="contact-toggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="contact-body">
-                <p>${contact.message || 'No message'}</p>
-            </div>
-            <div class="contact-actions">
-                <button class="btn btn-sm btn-primary" onclick="openReplyModal('${contactId}', '${contact.name}', '${contact.email}', '${escapedMessage}')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                    </svg>
-                    Reply
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteContact('${contactId}')">Delete</button>
+            <div class="contact-card-body">
+                <div class="contact-body">
+                    <p>${contact.message || 'No message'}</p>
+                </div>
+                <div class="contact-actions">
+                    <button class="btn btn-sm btn-primary" onclick="openReplyModal('${contactId}', '${contact.name}', '${contact.email}', '${escapedMessage}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                        Reply
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteContact('${contactId}')">Delete</button>
+                </div>
             </div>
         </div>
     `;
     }).join('');
 }
 
-// Open reply modal - Updated to handle both database and localStorage contacts
+// Toggle contact card expansion
+window.toggleContactCard = function(contactId) {
+    const card = document.querySelector(`[data-contact-id="${contactId}"]`);
+    if (card) {
+        card.classList.toggle('expanded');
+    }
+};
+
+// Filter contacts by status
+function filterContacts(filter) {
+    const allCards = document.querySelectorAll('.contact-card');
+    
+    allCards.forEach(card => {
+        const status = card.getAttribute('data-status') || 'unread';
+        
+        if (filter === 'all') {
+            card.style.display = 'block';
+        } else if (status === filter) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Open reply modal - Updated format
 window.openReplyModal = function(contactId, contactName, contactEmail, contactMessage) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Reply to ${contactName}</h3>
+                <h3>Replying to: ${contactEmail}</h3>
                 <button class="modal-close" onclick="closeReplyModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="modal-info">Replying to: <strong>${contactEmail}</strong></p>
                 <div class="original-message-box">
-                    <strong>Original Message:</strong>
+                    <strong>${contactName}:</strong>
                     <p>${contactMessage || 'No message'}</p>
                 </div>
                 <textarea 
@@ -1035,11 +1076,44 @@ window.replyToContact = function(index) {
     }
 };
 
+// Confirm delete contact with custom modal
+window.confirmDeleteContact = function(contactId) {
+    const modal = document.createElement('div');
+    modal.className = 'delete-modal-overlay';
+    modal.innerHTML = `
+        <div class="delete-modal-content">
+            <div class="delete-modal-header">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    Delete Contact
+                </h3>
+            </div>
+            <div class="delete-modal-body">
+                <p>Are you sure you want to delete this contact? This action cannot be undone.</p>
+            </div>
+            <div class="delete-modal-footer">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="deleteContact('${contactId}'); closeDeleteModal();">Delete</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+};
+
+// Close delete modal
+window.closeDeleteModal = function() {
+    const modal = document.querySelector('.delete-modal-overlay');
+    if (modal) modal.remove();
+};
+
 // Delete contact - Works with both database and localStorage
 window.deleteContact = async function(contactId) {
-    if (!confirm('Are you sure you want to delete this contact?')) {
-        return;
-    }
     
     try {
         // Remove the contact card from UI immediately for better UX

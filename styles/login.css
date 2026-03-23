@@ -1,0 +1,182 @@
+/* NEXAD Login Page - Dark Theme */
+
+/* ===== LOGIN HERO ===== */
+.login-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+    padding: 140px 20px 100px;
+    position: relative;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 48px 40px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    display: block;
+}
+
+.login-header h1 {
+    font-family: 'Akira Expanded', 'Arial Black', sans-serif;
+    font-size: 1.75rem;
+    font-weight: normal;
+    color: #FFFFFF;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+
+.login-header p {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+}
+
+.login-form {
+    margin-top: 32px;
+}
+
+/* Google Sign-In Button */
+.google-signin-btn {
+    width: 100%;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 50px;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #3c4043;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 16px;
+}
+
+.google-signin-btn:hover {
+    background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.google-signin-btn:active {
+    background: #f1f3f4;
+}
+
+.google-signin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.login-note {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Error Message */
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 14px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .login-hero {
+        padding: 100px 20px 80px;
+    }
+
+    .login-card {
+        padding: 40px 32px;
+    }
+
+    .login-logo {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 20px;
+    }
+
+    .login-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .login-header p {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-hero {
+        padding: 90px 16px 60px;
+    }
+
+    .login-card {
+        padding: 32px 24px;
+        border-radius: 20px;
+    }
+
+    .login-logo {
+        width: 56px;
+        height: 56px;
+    }
+
+    .login-header h1 {
+        font-size: 1.375rem;
+        margin-bottom: 10px;
+    }
+
+    .login-header p {
+        font-size: 0.8125rem;
+    }
+
+    .google-signin-btn {
+        padding: 13px 20px;
+        font-size: 0.9375rem;
+    }
+
+    .google-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .login-note {
+        font-size: 0.75rem;
+    }
+}

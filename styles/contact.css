@@ -23,10 +23,10 @@
     margin-bottom: 72px;
 }
 
-.contact-logo {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 48px;
+.contact-logo-large {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
     display: block;
     opacity: 0.9;
 }
@@ -57,142 +57,115 @@
     gap: 28px;
 }
 
-/* ===== EMAIL CARD - CLEAN GLASSMORPHISM ===== */
-.email-card-large {
+/* ===== EMAIL CARD - COMPACT RESEND-STYLE ===== */
+.email-card-compact {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 28px 32px;
+    gap: 14px;
+    padding: 16px 20px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+    border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     cursor: pointer;
     backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
     width: 100%;
 }
 
-.email-card-large:hover {
+.email-card-compact:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.email-card-icon {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
+.email-card-icon-small {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
 }
 
-.email-card-large:hover .email-card-icon {
+.email-card-compact:hover .email-card-icon-small {
     background: rgba(255, 255, 255, 0.12);
 }
 
-.email-card-icon svg {
-    width: 26px;
-    height: 26px;
+.email-card-icon-small svg {
+    width: 18px;
+    height: 18px;
     stroke: #FFFFFF;
     stroke-width: 2;
 }
 
-.email-card-content {
+.email-card-content-small {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.email-card-content h3 {
-    font-size: 0.8125rem;
+.email-label {
+    font-size: 0.6875rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-.email-card-content p {
-    font-size: 1.0625rem;
+.email-address {
+    font-size: 0.875rem;
     color: #FFFFFF;
-    margin: 0;
     font-weight: 500;
 }
 
-.email-card-arrow {
-    width: 24px;
-    height: 24px;
-    opacity: 0.3;
-    transition: all 0.3s ease;
-}
-
-.email-card-large:hover .email-card-arrow {
-    opacity: 0.8;
-    transform: translate(3px, -3px);
-}
-
-.email-card-arrow svg {
-    width: 100%;
-    height: 100%;
-    stroke: #FFFFFF;
-    stroke-width: 2;
-}
-
-/* ===== CONTACT FORM CARD - CLEAN GLASSMORPHISM ===== */
-.contact-form-card {
+/* ===== CONTACT FORM CARD - COMPACT RESEND-STYLE ===== */
+.contact-form-card-compact {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 56px 48px;
+    border-radius: 16px;
+    padding: 28px 32px;
     backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
-.form-card-title {
-    font-size: 1.75rem;
+.form-card-title-small {
+    font-size: 1.125rem;
     font-weight: 600;
     color: #FFFFFF;
-    margin-bottom: 12px;
-    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
     text-align: center;
 }
 
-.form-card-subtitle {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.6);
-    text-align: center;
-    margin-bottom: 40px;
-    font-weight: 400;
-}
-
-/* Auth Section */
-.auth-section {
+/* Auth Section - Compact */
+.auth-section-compact {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 24px 0;
+    gap: 16px;
+    padding: 0;
 }
 
-/* Custom Google Sign-In Button */
-.google-signin-btn {
+/* Custom Google Sign-In Button - Compact */
+.google-signin-btn-compact {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
-    max-width: 400px;
-    padding: 14px 24px;
+    padding: 11px 20px;
     background: #FFFFFF;
     color: #3C4043;
     border: 1px solid #DADCE0;
     border-radius: 50px;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 500;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
@@ -200,112 +173,173 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.google-signin-btn:hover {
+.google-signin-btn-compact:hover {
     background: #F8F9FA;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.google-signin-btn:active {
+.google-signin-btn-compact:active {
     background: #F1F3F4;
 }
 
-.google-signin-btn:disabled {
+.google-signin-btn-compact:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
-.google-icon {
-    width: 20px;
-    height: 20px;
+.google-icon-small {
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
 }
 
-.auth-note {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-align: center;
-    margin: 0;
-    font-weight: 400;
+/* User Info Display */
+.user-info-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-bottom: 16px;
 }
 
-/* Modern Form */
-.contact-form-modern {
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.user-details {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 2px;
 }
 
-.form-group-modern {
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.user-email-small {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.logout-btn-small {
+    padding: 6px 14px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-btn-small:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Compact Form */
+.contact-form-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group-compact {
     position: relative;
 }
 
-.form-group-modern input,
-.form-group-modern textarea {
+.form-label-small {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+
+.form-input-compact,
+.form-textarea-compact {
     width: 100%;
-    padding: 20px 24px;
+    padding: 10px 14px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    border-radius: 8px;
     color: #FFFFFF;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-family: 'Inter', sans-serif;
     transition: all 0.3s ease;
     outline: none;
 }
 
-.form-group-modern input::placeholder,
-.form-group-modern textarea::placeholder {
+.form-input-compact::placeholder,
+.form-textarea-compact::placeholder {
     color: rgba(255, 255, 255, 0.4);
 }
 
-.form-group-modern input:focus,
-.form-group-modern textarea:focus {
+.form-input-compact:focus,
+.form-textarea-compact:focus {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-.form-group-modern textarea {
+.form-textarea-compact {
     resize: vertical;
-    min-height: 160px;
-    line-height: 1.6;
+    min-height: 100px;
+    line-height: 1.5;
 }
 
-/* Submit Button - White Primary Style */
-.submit-btn-modern {
+/* Submit Button - Compact */
+.submit-btn-compact {
     width: 100%;
-    padding: 20px 32px;
+    padding: 11px 20px;
     background: #FFFFFF;
     color: #000000;
-    font-size: 1.0625rem;
+    font-size: 0.875rem;
     font-weight: 600;
     border: none;
-    border-radius: 14px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 12px;
+    margin-top: 4px;
     letter-spacing: -0.01em;
 }
 
-.submit-btn-modern:hover {
+.submit-btn-compact:hover {
     background: #F5F5F5;
     transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.5), 0 0 32px rgba(255, 255, 255, 0.3);
 }
 
-.submit-btn-modern:active {
+.submit-btn-compact:active {
     transform: translateY(0);
 }
 
-/* Success Message */
-.success-message-modern {
+/* Success Message - Compact */
+.success-message-compact {
     text-align: center;
-    padding: 48px 24px;
+    padding: 32px 20px;
 }
 
-.success-icon {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 28px;
+.success-icon-small {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
     background: rgba(34, 197, 94, 0.15);
     border-radius: 50%;
     display: flex;
@@ -313,27 +347,27 @@
     justify-content: center;
 }
 
-.success-icon svg {
-    width: 36px;
-    height: 36px;
+.success-icon-small svg {
+    width: 28px;
+    height: 28px;
     stroke: #22c55e;
     stroke-width: 2.5;
 }
 
-.success-message-modern h3 {
-    font-size: 1.625rem;
+.success-message-compact h3 {
+    font-size: 1.125rem;
     font-weight: 600;
     color: #FFFFFF;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     letter-spacing: -0.01em;
 }
 
-.success-message-modern p {
-    font-size: 1.0625rem;
+.success-message-compact p {
+    font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.65);
     margin: 0;
     font-weight: 400;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 /* ===== RESPONSIVE ===== */
