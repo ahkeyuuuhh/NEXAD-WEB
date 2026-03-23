@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple OAuth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Simple OAuth Test</h1>
+    <p>This is a minimal test to verify OAuth is working.</p>
+    
+    <button id="loginBtn">Sign in with Google</button>
+    <button id="checkSessionBtn">Check Session</button>
+    <button id="logoutBtn">Sign Out</button>
+    
+    <div id="status"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
+
+        const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
+        
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        
+        const statusDiv = document.getElementById('status');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            statusDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            console.log(message);
+        }
+
+        // Check for OAuth callback
+        async function checkCallback() {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+            const error = hashParams.get('error');
+            const errorDescription = hashParams.get('error_description');
+            
+            if (error) {
+                log(`❌ OAuth Error: ${error} - ${errorDescription}`, 'error');
+                return;
+            }
+            
+            if (accessToken) {
+                log('✅ Found OAuth tokens in URL!', 'success');
+                log(`Access Token: ${accessToken.substring(0, 20)}...`, 'info');
+                
+                try {
+                    const { data, error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken
+                    });
+                    
+                    if (error) {
+                        log(`❌ Error setting session: ${error.message}`, 'error');
+                    } else {
+                        log('✅ Session set successfully!', 'success');
+                        log(`User: ${data.user.email}`, 'success');
+                    }
+                } catch (e) {
+                    log(`❌ Exception: ${e.message}`, 'error');
+                }
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Login button
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            log('🔵 Starting OAuth flow...', 'info');
+            
+            const redirectUrl = window.location.origin + window.location.pathname;
+            log(`Redirect URL: ${redirectUrl}`, 'info');
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: redirectUrl,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        }
+                    }
+                });
+
+                if (error) {
+                    log(`❌ OAuth Error: ${error.message}`, 'error');
+                } else {
+                    log('✅ OAuth initiated, redirecting...', 'success');
+                }
+            } catch (e) {
+                log(`❌ Exception: ${e.message}`, 'error');
+            }
+        });
+
+        // Check session button
+        document.getElementById('checkSessionBtn').addEventListener('click', async () => {
+            log('🔍 Checking session...', 'info');
+            
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    log(`❌ Error: ${error.message}`, 'error');
+                } else if (session) {
+                    log('✅ Session found!', 'success');
+                    log(`User: ${session.user.email}`, 'success');
+                    log(`Expires: ${new Date(session.expires_at * 1000).toLocaleString()}`, 'info');
+                } else {
+                    log('⚠️ No session found', 'error');
+                }
+            } catch (e) {
+                log(`❌ Exception: ${e.message}`, 'error');
+            }
+        });
+
+        // Logout button
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            log('🔵 Signing out...', 'info');
+            
+            try {
+                const { error } = await supabase.auth.signOut();
+                
+                if (error) {
+                    log(`❌ Error: ${error.message}`, 'error');
+                } else {
+                    log('✅ Signed out successfully', 'success');
+                }
+            } catch (e) {
+                log(`❌ Exception: ${e.message}`, 'error');
+            }
+        });
+
+        // Auth state listener
+        supabase.auth.onAuthStateChange((event, session) => {
+            log(`🔔 Auth Event: ${event}`, 'info');
+            if (session) {
+                log(`User: ${session.user.email}`, 'success');
+            }
+        });
+
+        // Check on load
+        log('✅ Supabase initialized', 'success');
+        log(`Current URL: ${window.location.href}`, 'info');
+        checkCallback();
+    </script>
+</body>
+</html>

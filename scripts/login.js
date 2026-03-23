@@ -41,50 +41,61 @@ async function checkExistingSession() {
     try {
         console.log('🔵 [Session] Checking for existing session...');
         
-        // Check for OAuth tokens in URL
+        // Check for OAuth tokens in URL hash
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const queryParams = new URLSearchParams(window.location.search);
-        
-        const accessToken = hashParams.get('access_token') || queryParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token') || queryParams.get('refresh_token');
+        const accessToken = hashParams.get('access_token');
         
         if (accessToken) {
-            console.log('🟢 [Session] Found OAuth tokens in URL');
+            console.log('🟢 [Session] Found OAuth tokens in URL, processing...');
             
-            const { data, error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken || ''
-            });
+            // Clean up URL immediately
+            window.history.replaceState({}, document.title, window.location.pathname);
             
-            if (error) {
-                console.error('🔴 [Session] Error setting session:', error);
-                showError('Authentication failed. Please try again.');
+            // Wait for Supabase to process the session
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Check if session was established
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            
+            if (sessionError) {
+                console.error('🔴 [Session] Error getting session:', sessionError);
+                showError('Failed to establish session. Please try again.');
                 return;
             }
             
-            if (data.session && data.session.user) {
-                console.log('🟢 [Session] Session set successfully, redirecting to contact page...');
-                window.location.href = 'contact.html';
+            if (session && session.user) {
+                console.log('🟢 [Session] Session established successfully!');
+                showError('Login successful! Redirecting...');
+                
+                // Redirect to contact page with full path
+                setTimeout(() => {
+                    window.location.href = window.location.origin + window.location.pathname.replace('login.html', 'contact.html');
+                }, 1500);
+                return;
+            } else {
+                console.error('🔴 [Session] No session after OAuth');
+                showError('Authentication completed but session not found. Please try again.');
                 return;
             }
         }
         
         // Check for existing session
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: getSessionError } = await supabase.auth.getSession();
         
-        if (error) {
-            console.error('🔴 [Session] Error checking session:', error);
+        if (getSessionError) {
+            console.error('🔴 [Session] Error checking session:', getSessionError);
             return;
         }
 
         if (session && session.user) {
             console.log('🟢 [Session] Existing session found, redirecting to contact page...');
-            window.location.href = 'contact.html';
+            window.location.href = window.location.origin + window.location.pathname.replace('login.html', 'contact.html');
         } else {
             console.log('🟡 [Session] No existing session found');
         }
     } catch (error) {
         console.error('🔴 [Session] Exception:', error);
+        showError('An error occurred. Please try again.');
     }
 }
 
@@ -112,13 +123,9 @@ async function handleGoogleSignIn() {
         
         console.log('🔵 [OAuth] Starting Google OAuth...');
         
-        const redirectTo = window.location.origin + '/nexad-website/login.html';
-        console.log('🔵 [OAuth] Redirect URL:', redirectTo);
-        
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: redirectTo,
                 queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',
@@ -131,13 +138,7 @@ async function handleGoogleSignIn() {
             throw error;
         }
         
-        if (!data?.url) {
-            console.error('🔴 [OAuth] No OAuth URL returned');
-            throw new Error('Failed to get Google sign-in URL');
-        }
-
-        console.log('🟢 [OAuth] OAuth URL received');
-        console.log('🔵 [OAuth] Redirecting to Google...');
+        console.log('🟢 [OAuth] OAuth initiated successfully');
         
     } catch (error) {
         console.error('🔴 [OAuth] Error:', error);

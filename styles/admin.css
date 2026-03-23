@@ -540,6 +540,18 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+.contact-subject {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 3px 10px;
+    background: rgba(102, 126, 234, 0.15);
+    color: #8b9cff;
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
 .contact-toggle {
     width: 20px;
     height: 20px;

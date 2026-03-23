@@ -489,6 +489,7 @@ function displayContacts(contacts) {
                     <div class="contact-info">
                         <h4>${contact.name || 'Unknown'}</h4>
                         <p>${contact.email || 'No email'}</p>
+                        ${contact.subject ? `<span class="contact-subject">${contact.subject}</span>` : ''}
                     </div>
                     <div class="contact-meta">
                         ${statusBadge}
