@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Contacts - NEXAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+            color: white;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        pre {
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            color: #0f0;
+            font-size: 12px;
+        }
+        
+        .stat {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .contact-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .contact-item h3 {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+        
+        .contact-item p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Contact Storage Test</h1>
+        <p class="subtitle">Check what's stored in localStorage</p>
+        
+        <!-- Stats -->
+        <div class="card">
+            <div class="stat" id="contactCount">0</div>
+            <div class="label">Contacts in localStorage</div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="card">
+            <h2 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 16px;">Actions</h2>
+            <button class="btn" onclick="loadContacts()">🔄 Refresh</button>
+            <button class="btn" onclick="addTestContact()">➕ Add Test Contact</button>
+            <button class="btn btn-danger" onclick="clearContacts()">🗑️ Clear All</button>
+            <a href="admin.html" class="btn" style="background: rgba(255, 255, 255, 0.1);">Go to Admin Panel</a>
+        </div>
+        
+        <!-- Contact List -->
+        <div class="card">
+            <h2 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 16px;">Stored Contacts</h2>
+            <div id="contactsList"></div>
+        </div>
+        
+        <!-- Raw Data -->
+        <div class="card">
+            <h2 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 16px;">Raw localStorage Data</h2>
+            <pre id="rawData"></pre>
+        </div>
+    </div>
+    
+    <script>
+        function loadContacts() {
+            try {
+                const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
+                
+                // Update count
+                document.getElementById('contactCount').textContent = contacts.length;
+                
+                // Display contacts
+                const contactsList = document.getElementById('contactsList');
+                if (contacts.length === 0) {
+                    contactsList.innerHTML = '<p style="color: rgba(255, 255, 255, 0.5);">No contacts found in localStorage</p>';
+                } else {
+                    contactsList.innerHTML = contacts.map((contact, index) => `
+                        <div class="contact-item">
+                            <h3>${contact.name || 'Unknown'}</h3>
+                            <p><strong>Email:</strong> ${contact.email || 'No email'}</p>
+                            <p><strong>Message:</strong> ${contact.message || 'No message'}</p>
+                            <p><strong>Subject:</strong> ${contact.subject || 'General Inquiry'}</p>
+                            <p><strong>Date:</strong> ${new Date(contact.timestamp || contact.created_at).toLocaleString()}</p>
+                            <p><strong>ID:</strong> ${contact.id || 'No ID'}</p>
+                        </div>
+                    `).join('');
+                }
+                
+                // Show raw data
+                document.getElementById('rawData').textContent = JSON.stringify(contacts, null, 2);
+                
+                console.log('✅ Loaded', contacts.length, 'contacts');
+                console.log('📋 Contacts:', contacts);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('contactsList').innerHTML = '<p style="color: #ef4444;">Error loading contacts: ' + error.message + '</p>';
+            }
+        }
+        
+        function addTestContact() {
+            try {
+                const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
+                
+                const testContact = {
+                    id: 'test_' + Date.now(),
+                    name: 'Test User ' + (contacts.length + 1),
+                    email: 'test' + (contacts.length + 1) + '@example.com',
+                    message: 'This is a test message created at ' + new Date().toLocaleString(),
+                    subject: 'Test Subject',
+                    timestamp: new Date().toISOString(),
+                    savedToDatabase: false
+                };
+                
+                contacts.push(testContact);
+                localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
+                
+                console.log('✅ Test contact added');
+                loadContacts();
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                alert('Error adding test contact: ' + error.message);
+            }
+        }
+        
+        function clearContacts() {
+            if (confirm('Are you sure you want to delete ALL contacts from localStorage?')) {
+                localStorage.removeItem('nexad_contacts');
+                console.log('✅ All contacts cleared');
+                loadContacts();
+            }
+        }
+        
+        // Load on page load
+        document.addEventListener('DOMContentLoaded', loadContacts);
+    </script>
+</body>
+</html>

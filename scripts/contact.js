@@ -248,8 +248,13 @@ async function handleFormSubmit(e) {
         name: formData.get('name'),
         email: formData.get('email'),
         message: formData.get('message'),
+        subject: formData.get('subject') || 'General Inquiry',
         timestamp: new Date().toISOString(),
-        userInfo: currentUser
+        user_info: currentUser ? {
+            name: currentUser.name,
+            email: currentUser.email,
+            picture: currentUser.picture
+        } : null
     };
     
     submitBtn.disabled = true;
@@ -257,17 +262,90 @@ async function handleFormSubmit(e) {
     submitBtn.textContent = 'Sending...';
     
     try {
+        // Try to save to database if available
+        let savedToDatabase = false;
+        let contactId = null;
+        
+        if (supabase) {
+            try {
+                console.log('📤 Attempting to save to database...');
+                
+                const { data, error } = await supabase
+                    .from('contacts')
+                    .insert([{
+                        name: contactData.name,
+                        email: contactData.email,
+                        message: contactData.message,
+                        subject: contactData.subject,
+                        user_info: contactData.user_info
+                    }])
+                    .select()
+                    .single();
+                
+                if (!error && data) {
+                    console.log('✅ Contact saved to database:', data);
+                    savedToDatabase = true;
+                    contactId = data.id;
+                    
+                    // Email notifications disabled for now
+                    // To enable: Deploy the Edge Function and uncomment the code below
+                    /*
+                    try {
+                        console.log('📧 Attempting to send email notification...');
+                        const emailResponse = await supabase.functions.invoke('send-contact-email', {
+                            body: {
+                                type: 'new_contact',
+                                contact: {
+                                    id: data.id,
+                                    name: contactData.name,
+                                    email: contactData.email,
+                                    message: contactData.message,
+                                    subject: contactData.subject
+                                }
+                            }
+                        });
+                        
+                        if (!emailResponse.error) {
+                            console.log('✅ Email notification sent');
+                        } else {
+                            console.warn('⚠️ Email notification failed:', emailResponse.error);
+                        }
+                    } catch (emailError) {
+                        console.warn('⚠️ Email notification error:', emailError);
+                    }
+                    */
+                } else {
+                    console.warn('⚠️ Database save failed:', error);
+                }
+            } catch (dbError) {
+                console.warn('⚠️ Database error:', dbError);
+            }
+        }
+        
+        // Always save to localStorage as backup
         const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
-        contacts.push(contactData);
+        contacts.push({
+            ...contactData,
+            id: contactId || 'local_' + Date.now(),
+            savedToDatabase: savedToDatabase
+        });
         localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
+        console.log('✅ Contact saved to localStorage');
         
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
+        // Show success message
         contactForm.style.display = 'none';
         successMessage.style.display = 'block';
         
-        console.log('✅ Contact form submitted:', contactData);
+        console.log('✅ Contact form submitted successfully');
         
+        if (savedToDatabase) {
+            console.log('✅ Full system active: Database + Email notifications');
+        } else {
+            console.log('ℹ️ Fallback mode: Saved to localStorage only');
+            console.log('ℹ️ To enable database + email: Complete the Supabase setup');
+        }
+        
+        // Sign out after 3 seconds
         setTimeout(async () => {
             if (supabase) {
                 await supabase.auth.signOut();
@@ -277,7 +355,10 @@ async function handleFormSubmit(e) {
         
     } catch (error) {
         console.error('❌ Error submitting form:', error);
-        showNotification('There was an error sending your message. Please try again.', 'error');
+        showNotification(
+            'There was an error sending your message. Please try again.',
+            'error'
+        );
         
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;

@@ -12,6 +12,7 @@ const IPA_URL = ''; // Will be added when IPA is built
 
 let supabase = null;
 let currentAdmin = null;
+let realtimeChannel = null;
 
 console.log('📜 Admin.js loaded');
 
@@ -208,6 +209,7 @@ function showDashboard() {
     }
     
     loadDashboardData();
+    setupRealtimeSubscription();
 }
 
 // Setup event listeners
@@ -318,9 +320,66 @@ function loadDashboardData() {
 
 // Load contacts from localStorage
 function loadContacts() {
+    // Try database first, fall back to localStorage
+    loadContactsFromDatabase();
+}
+
+// Load contacts from Supabase database
+async function loadContactsFromDatabase() {
+    try {
+        if (!supabase) {
+            console.log('ℹ️ Database not configured, using localStorage');
+            loadContactsFromLocalStorage();
+            return;
+        }
+        
+        console.log('📧 Loading contacts from database...');
+        
+        const { data: contacts, error } = await supabase
+            .from('contacts')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.warn('⚠️ Database error, falling back to localStorage:', error);
+            loadContactsFromLocalStorage();
+            return;
+        }
+        
+        if (!contacts || contacts.length === 0) {
+            console.log('ℹ️ No contacts in database, checking localStorage');
+            loadContactsFromLocalStorage();
+            return;
+        }
+        
+        console.log('✅ Loaded', contacts.length, 'contacts from database');
+        
+        const contactsCount = document.getElementById('contactsCount');
+        const totalContacts = document.getElementById('totalContacts');
+        const contactSubmissions = document.getElementById('contactSubmissions');
+        
+        if (contactsCount) contactsCount.textContent = contacts.length;
+        if (totalContacts) totalContacts.textContent = contacts.length;
+        if (contactSubmissions) contactSubmissions.textContent = contacts.length;
+        
+        displayContacts(contacts);
+        
+    } catch (error) {
+        console.warn('⚠️ Exception loading contacts, using localStorage:', error);
+        loadContactsFromLocalStorage();
+    }
+}
+
+// Fallback to localStorage
+function loadContactsFromLocalStorage() {
     try {
         const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
-        console.log('📧 Loaded contacts:', contacts.length);
+        console.log('📧 Loaded', contacts.length, 'contacts from localStorage');
+        
+        // Log the contacts for debugging
+        if (contacts.length > 0) {
+            console.log('📋 Contacts:', contacts);
+        }
         
         const contactsCount = document.getElementById('contactsCount');
         const totalContacts = document.getElementById('totalContacts');
@@ -332,7 +391,8 @@ function loadContacts() {
         
         displayContacts(contacts);
     } catch (error) {
-        console.error('❌ Error loading contacts:', error);
+        console.error('❌ Error loading contacts from localStorage:', error);
+        displayContacts([]);
     }
 }
 
@@ -401,35 +461,510 @@ function displayContacts(contacts) {
     const contactsList = document.getElementById('contactsList');
     if (!contactsList) return;
     
-    if (contacts.length === 0) {
+    if (!contacts || contacts.length === 0) {
         contactsList.innerHTML = '<div class="empty-state">No contact messages yet</div>';
         return;
     }
     
-    contactsList.innerHTML = contacts.map((contact, index) => `
-        <div class="contact-card">
+    contactsList.innerHTML = contacts.map((contact) => {
+        // Handle both database format (created_at) and localStorage format (timestamp)
+        const createdAt = contact.created_at || contact.timestamp || new Date().toISOString();
+        const statusBadge = getStatusBadge(contact.status || 'unread');
+        const contactId = contact.id || 'local_' + Date.now();
+        const escapedMessage = (contact.message || 'No message').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+        
+        return `
+        <div class="contact-card" data-contact-id="${contactId}">
             <div class="contact-header">
                 <div class="contact-info">
                     <h4>${contact.name || 'Unknown'}</h4>
                     <p>${contact.email || 'No email'}</p>
+                    ${contact.subject ? `<span class="contact-subject">${contact.subject}</span>` : ''}
                 </div>
                 <div class="contact-meta">
-                    <span class="contact-date">${new Date(contact.timestamp).toLocaleDateString()}</span>
+                    ${statusBadge}
+                    <span class="contact-date">${new Date(createdAt).toLocaleDateString()}</span>
                 </div>
             </div>
             <div class="contact-body">
                 <p>${contact.message || 'No message'}</p>
             </div>
             <div class="contact-actions">
-                <button class="btn btn-sm btn-outline" onclick="replyToContact(${index})">Reply</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteContact(${index})">Delete</button>
+                <button class="btn btn-sm btn-primary" onclick="openReplyModal('${contactId}', '${contact.name}', '${contact.email}', '${escapedMessage}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                    Reply
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteContact('${contactId}')">Delete</button>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
+
+// Open reply modal - Updated to handle both database and localStorage contacts
+window.openReplyModal = function(contactId, contactName, contactEmail, contactMessage) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reply to ${contactName}</h3>
+                <button class="modal-close" onclick="closeReplyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-info">Replying to: <strong>${contactEmail}</strong></p>
+                <div class="original-message-box">
+                    <strong>Original Message:</strong>
+                    <p>${contactMessage || 'No message'}</p>
+                </div>
+                <textarea 
+                    id="replyMessage" 
+                    class="reply-textarea" 
+                    placeholder="Type your reply here..."
+                    rows="8"
+                ></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeReplyModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="sendReply('${contactId}', '${contactEmail}', '${contactName}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                    Send Reply
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add modal styles if not already present
+    if (!document.querySelector('#modal-styles')) {
+        const style = document.createElement('style');
+        style.id = 'modal-styles';
+        style.textContent = `
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.2s ease;
+            }
+            .modal-content {
+                background: #1a1a1a;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 90vh;
+                overflow: hidden;
+                animation: slideUp 0.3s ease;
+            }
+            .modal-header {
+                padding: 20px 24px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .modal-header h3 {
+                margin: 0;
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 20px;
+            }
+            .modal-close {
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 28px;
+                cursor: pointer;
+                padding: 0;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+                transition: all 0.2s;
+            }
+            .modal-close:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.9);
+            }
+            .modal-body {
+                padding: 24px;
+            }
+            .modal-info {
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 16px;
+            }
+            .original-message-box {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 16px;
+            }
+            .original-message-box strong {
+                color: rgba(255, 255, 255, 0.9);
+                display: block;
+                margin-bottom: 8px;
+            }
+            .original-message-box p {
+                color: rgba(255, 255, 255, 0.7);
+                margin: 0;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            .reply-textarea {
+                width: 100%;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                padding: 12px;
+                color: rgba(255, 255, 255, 0.9);
+                font-family: inherit;
+                font-size: 14px;
+                resize: vertical;
+                min-height: 150px;
+            }
+            .reply-textarea:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+            .modal-footer {
+                padding: 16px 24px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(modal);
+    document.getElementById('replyMessage').focus();
+};
+
+
+
+// Get status badge HTML
+function getStatusBadge(status) {
+    const badges = {
+        'unread': '<span class="status-badge status-unread">Unread</span>',
+        'read': '<span class="status-badge status-read">Read</span>',
+        'replied': '<span class="status-badge status-replied">Replied</span>',
+        'archived': '<span class="status-badge status-archived">Archived</span>'
+    };
+    return badges[status] || badges['unread'];
+}
+
+// Setup real-time subscription
+function setupRealtimeSubscription() {
+    if (!supabase) {
+        console.warn('⚠️ Supabase not available, real-time updates disabled');
+        return;
+    }
+    
+    console.log('⚡ Setting up real-time subscription...');
+    
+    // Unsubscribe from previous channel if exists
+    if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+    }
+    
+    // Subscribe to contacts table changes
+    realtimeChannel = supabase
+        .channel('contacts-changes')
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'contacts'
+            },
+            (payload) => {
+                console.log('⚡ Real-time update received:', payload);
+                handleRealtimeUpdate(payload);
+            }
+        )
+        .subscribe((status) => {
+            console.log('⚡ Realtime subscription status:', status);
+        });
+}
+
+// Handle real-time updates
+function handleRealtimeUpdate(payload) {
+    const { eventType, new: newRecord, old: oldRecord } = payload;
+    
+    switch (eventType) {
+        case 'INSERT':
+            console.log('✅ New contact received:', newRecord);
+            showNotification(`New contact from ${newRecord.name}`, 'success');
+            loadContacts();
+            loadRecentActivity();
+            break;
+            
+        case 'UPDATE':
+            console.log('✅ Contact updated:', newRecord);
+            loadContacts();
+            break;
+            
+        case 'DELETE':
+            console.log('✅ Contact deleted:', oldRecord);
+            loadContacts();
+            loadRecentActivity();
+            break;
+    }
+}
+
+// Close reply modal
+window.closeReplyModal = function() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) modal.remove();
+};
+
+// Send reply - Direct Resend API (No Edge Function needed)
+window.sendReply = async function(contactId, contactEmail, contactName) {
+    const replyMessage = document.getElementById('replyMessage').value.trim();
+    
+    if (!replyMessage) {
+        showNotification('Please enter a reply message', 'error');
+        return;
+    }
+    
+    const sendBtn = event.target;
+    const originalText = sendBtn.innerHTML;
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span>Sending...</span>';
+    
+    try {
+        if (!supabase) {
+            throw new Error('Database connection not available');
+        }
+        
+        console.log('📤 Sending reply...');
+        
+        // Get the full contact details
+        const { data: contact, error: fetchError } = await supabase
+            .from('contacts')
+            .select('*')
+            .eq('id', contactId)
+            .single();
+        
+        if (fetchError) throw fetchError;
+        
+        // Insert reply into database
+        const { data: reply, error: replyError } = await supabase
+            .from('contact_replies')
+            .insert([{
+                contact_id: contactId,
+                admin_email: currentAdmin.email,
+                reply_message: replyMessage
+            }])
+            .select()
+            .single();
+        
+        if (replyError) throw replyError;
+        
+        console.log('✅ Reply saved to database');
+        
+        // Send email directly using Resend API (bypassing Edge Function)
+        try {
+            await sendEmailDirectly(contact, replyMessage);
+            console.log('✅ Reply email sent to customer');
+            showNotification('Reply sent successfully!', 'success');
+        } catch (emailError) {
+            console.error('⚠️ Email send failed:', emailError);
+            showNotification('Reply saved but email failed to send. Check Resend API key.', 'warning');
+        }
+        
+        // Update contact status to 'replied'
+        await supabase
+            .from('contacts')
+            .update({ 
+                status: 'replied',
+                replied_at: new Date().toISOString()
+            })
+            .eq('id', contactId);
+        
+        closeReplyModal();
+        loadContacts();
+        
+    } catch (error) {
+        console.error('❌ Error sending reply:', error);
+        showNotification('Failed to send reply: ' + error.message, 'error');
+        
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = originalText;
+    }
+};
+
+// Send email directly to Resend API (no Edge Function needed)
+async function sendEmailDirectly(contact, replyMessage) {
+    console.log('📧 sendEmailDirectly called');
+    
+    // Validate contact data
+    if (!contact || !contact.email || !contact.name) {
+        throw new Error('Invalid contact data: missing required fields');
+    }
+    
+    if (!replyMessage || replyMessage.trim() === '') {
+        throw new Error('Reply message is empty');
+    }
+    
+    console.log('✅ Contact data validated');
+    
+    // Call Edge Function using direct fetch
+    try {
+        console.log('📤 Calling Edge Function...');
+        
+        const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
+        
+        const payload = {
+            type: 'reply_to_customer',
+            contact: {
+                id: contact.id || 'unknown',
+                name: contact.name || 'User',
+                email: contact.email,
+                message: contact.message || 'No message',
+                subject: contact.subject || 'General Inquiry'
+            },
+            reply: {
+                message: replyMessage
+            }
+        };
+        
+        console.log('📦 Sending payload to Edge Function');
+        
+        const response = await fetch(`${supabaseUrl}/functions/v1/send-contact-email`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabaseAnonKey
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        console.log('� Response status:', response.status);
+        
+        const responseText = await response.text();
+        console.log('📄 Response:', responseText);
+        
+        if (!response.ok) {
+            throw new Error(`Edge Function returned ${response.status}: ${responseText}`);
+        }
+        
+        const data = JSON.parse(responseText);
+        console.log('✅ Email sent successfully!');
+        return data;
+    } catch (error) {
+        console.error('❌ Failed:', error);
+        throw new Error(`Failed to send email: ${error.message || 'Unknown error'}`);
+    }
+}
+
+// Mark contact as read
+window.markAsRead = async function(contactId) {
+    try {
+        if (!supabase) {
+            showNotification('Database connection not available', 'error');
+            return;
+        }
+        
+        const { error } = await supabase
+            .from('contacts')
+            .update({ 
+                status: 'read',
+                read_at: new Date().toISOString()
+            })
+            .eq('id', contactId);
+        
+        if (error) throw error;
+        
+        console.log('✅ Contact marked as read');
+        showNotification('Marked as read', 'success');
+        loadContacts();
+        
+    } catch (error) {
+        console.error('❌ Error marking as read:', error);
+        showNotification('Failed to mark as read', 'error');
+    }
+};
 
 // Load recent activity
 function loadRecentActivity() {
+    loadRecentActivityFromDatabase();
+}
+
+// Load recent activity from database
+async function loadRecentActivityFromDatabase() {
+    const activityList = document.getElementById('recentActivity');
+    if (!activityList) return;
+    
+    try {
+        if (!supabase) {
+            loadRecentActivityFromLocalStorage();
+            return;
+        }
+        
+        const { data: contacts, error } = await supabase
+            .from('contacts')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(5);
+        
+        if (error) {
+            console.error('❌ Error loading recent activity:', error);
+            loadRecentActivityFromLocalStorage();
+            return;
+        }
+        
+        if (contacts.length === 0) {
+            activityList.innerHTML = '<div class="empty-state">No recent activity</div>';
+            return;
+        }
+        
+        activityList.innerHTML = contacts.map(contact => `
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <div class="activity-content">
+                    <p><strong>${contact.name}</strong> sent a message</p>
+                    <span class="activity-time">${new Date(contact.created_at).toLocaleString()}</span>
+                </div>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('❌ Exception loading recent activity:', error);
+        loadRecentActivityFromLocalStorage();
+    }
+}
+
+// Fallback to localStorage for recent activity
+function loadRecentActivityFromLocalStorage() {
     const activityList = document.getElementById('recentActivity');
     if (!activityList) return;
     
@@ -500,15 +1035,60 @@ window.replyToContact = function(index) {
     }
 };
 
-// Delete contact
-window.deleteContact = function(index) {
-    if (confirm('Are you sure you want to delete this contact?')) {
-        const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
-        contacts.splice(index, 1);
-        localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
+// Delete contact - Works with both database and localStorage
+window.deleteContact = async function(contactId) {
+    if (!confirm('Are you sure you want to delete this contact?')) {
+        return;
+    }
+    
+    try {
+        // Remove the contact card from UI immediately for better UX
+        const contactCard = document.querySelector(`[data-contact-id="${contactId}"]`);
+        if (contactCard) {
+            contactCard.style.opacity = '0.5';
+            contactCard.style.pointerEvents = 'none';
+        }
+        
+        if (!supabase) {
+            // Fallback to localStorage
+            const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
+            const filteredContacts = contacts.filter(c => c.id !== contactId && !contactId.startsWith('local_'));
+            localStorage.setItem('nexad_contacts', JSON.stringify(filteredContacts));
+            
+            console.log('✅ Contact deleted from localStorage');
+            showNotification('Contact deleted successfully', 'success');
+            
+            // Reload contacts to update UI
+            loadContacts();
+            loadRecentActivity();
+            return;
+        }
+        
+        // Try database deletion
+        const { error } = await supabase
+            .from('contacts')
+            .delete()
+            .eq('id', contactId);
+        
+        if (error) throw error;
+        
+        console.log('✅ Contact deleted from database');
+        showNotification('Contact deleted successfully', 'success');
+        
+        // Reload contacts to update UI
         loadContacts();
         loadRecentActivity();
-        console.log('✅ Contact deleted');
+        
+    } catch (error) {
+        console.error('❌ Error deleting contact:', error);
+        showNotification('Failed to delete contact: ' + error.message, 'error');
+        
+        // Restore the contact card if deletion failed
+        const contactCard = document.querySelector(`[data-contact-id="${contactId}"]`);
+        if (contactCard) {
+            contactCard.style.opacity = '1';
+            contactCard.style.pointerEvents = 'auto';
+        }
     }
 };
 
@@ -527,6 +1107,86 @@ function showError(message) {
     loginCard.appendChild(errorDiv);
     
     setTimeout(() => errorDiv.remove(), 5000);
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="notification-message">${message}</span>
+            <button class="notification-close">&times;</button>
+        </div>
+    `;
+    
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                max-width: 350px;
+            }
+            .notification.show { transform: translateX(0); }
+            .notification-error { border-left: 4px solid #ef4444; }
+            .notification-success { border-left: 4px solid #22c55e; }
+            .notification-warning { border-left: 4px solid #f59e0b; }
+            .notification-info { border-left: 4px solid #3b82f6; }
+            .notification-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 20px;
+            }
+            .notification-message {
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.9);
+                line-height: 1.5;
+            }
+            .notification-close {
+                background: none;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+                color: rgba(255, 255, 255, 0.6);
+                margin-left: 16px;
+                padding: 0;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .notification-close:hover {
+                color: rgba(255, 255, 255, 0.9);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+    
+    notification.querySelector('.notification-close').addEventListener('click', () => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    });
 }
 
 console.log('✅ Admin.js fully loaded and ready');
