@@ -279,9 +279,9 @@ body {
 }
 
 .nav-logo {
-    width: 140px;
+    width: 220px;
     height: auto;
-    max-height: 48px;
+    max-height: 56px;
     filter: brightness(0) invert(1);
     transition: filter 0.3s ease;
     object-fit: contain;
@@ -758,9 +758,9 @@ body {
 }
 
 .footer-logo {
-    width: 160px;
+    width: 240px;
     height: auto;
-    max-height: 52px;
+    max-height: 72px;
     object-fit: contain;
 }
 
@@ -865,8 +865,8 @@ body {
     }
     
     .nav-logo {
-        width: 100px;
-        max-height: 34px;
+        width: 160px;
+        max-height: 44px;
     }
     
     /* Hero */
@@ -1042,8 +1042,8 @@ body {
     }
     
     .footer-logo {
-        width: 110px;
-        max-height: 38px;
+        width: 180px;
+        max-height: 56px;
     }
 }
 
@@ -1055,8 +1055,8 @@ body {
     }
 
     .nav-logo {
-        width: 90px;
-        max-height: 30px;
+        width: 140px;
+        max-height: 40px;
     }
 
     /* Typography */
@@ -1190,8 +1190,8 @@ body {
     }
 
     .footer-logo {
-        width: 95px;
-        max-height: 34px;
+        width: 160px;
+        max-height: 50px;
     }
 
     .footer-description {
@@ -1471,6 +1471,7 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     box-shadow: var(--shadow-card);
+    color: #1A1A1A !important;
 }
 
 .demo-btn.btn-primary {
@@ -1515,4 +1516,147 @@ body {
         max-width: 280px;
         min-width: auto;
     }
+}
+
+
+/* ===== GLOBAL AUTH STYLES ===== */
+/* Profile Dropdown in Navigation */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.login-btn {
+    display: inline-flex !important;
+    align-items: center;
+    padding: 8px 16px !important;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.profile-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.profile-btn:hover {
+    opacity: 0.8;
+}
+
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.profile-btn:hover .profile-avatar {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: rgba(26, 26, 26, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    min-width: 240px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.profile-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-menu-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.profile-menu-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.profile-menu-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.profile-menu-email {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-menu-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: #fca5a5;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.profile-menu-logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.profile-menu-logout svg {
+    stroke-width: 2;
 }

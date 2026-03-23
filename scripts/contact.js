@@ -1,4 +1,4 @@
-// Contact Page JavaScript - Supabase Auth Implementation
+// Contact Page JavaScript - Works with Global Auth System
 // Using ES6 modules for proper Supabase import
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
@@ -42,23 +42,29 @@ function setupAuthListener() {
         
         if (event === 'SIGNED_IN' && session) {
             console.log('🟢 [Auth] User signed in:', session.user.email);
+            console.log('🟢 [Auth] User metadata:', session.user.user_metadata);
+            
             currentUser = {
-                name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+                name: session.user.user_metadata?.full_name || 
+                      session.user.user_metadata?.name || 
+                      session.user.email?.split('@')[0] || 
+                      'User',
                 email: session.user.email,
-                picture: session.user.user_metadata?.avatar_url || null
+                picture: session.user.user_metadata?.avatar_url || 
+                        session.user.user_metadata?.picture || 
+                        null
             };
             
-            updateNavLink();
+            console.log('🟢 [Auth] Current user object:', currentUser);
+            
             showContactForm();
         } else if (event === 'SIGNED_OUT') {
             console.log('🟡 [Auth] User signed out');
             currentUser = null;
             
-            const profileDropdown = document.getElementById('profileDropdown');
             const authSection = document.getElementById('authSection');
             const contactForm = document.getElementById('contactForm');
             
-            if (profileDropdown) profileDropdown.style.display = 'none';
             if (authSection) authSection.style.display = 'flex';
             if (contactForm) contactForm.style.display = 'none';
         }
@@ -237,14 +243,21 @@ async function checkExistingSession() {
 
         if (session && session.user) {
             console.log('🟢 [Session] Session found:', session.user.email);
+            console.log('🟢 [Session] User metadata:', session.user.user_metadata);
+            
             currentUser = {
-                name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+                name: session.user.user_metadata?.full_name || 
+                      session.user.user_metadata?.name || 
+                      session.user.email?.split('@')[0] || 
+                      'User',
                 email: session.user.email,
-                picture: session.user.user_metadata?.avatar_url || null
+                picture: session.user.user_metadata?.avatar_url || 
+                        session.user.user_metadata?.picture || 
+                        null
             };
             
-            // Update nav link to show profile
-            updateNavLink();
+            console.log('🟢 [Session] Current user object:', currentUser);
+            
             showContactForm();
         } else {
             console.log('🟡 [Session] No session found, showing login');
@@ -253,71 +266,6 @@ async function checkExistingSession() {
         console.error('🔴 [Session] Exception:', error);
     }
 }
-
-// Update navigation link
-function updateNavLink() {
-    const profileDropdown = document.getElementById('profileDropdown');
-    const profileBtn = document.getElementById('profileBtn');
-    const profileMenu = document.getElementById('profileMenu');
-    const navAvatar = document.getElementById('navAvatar');
-    const menuAvatar = document.getElementById('menuAvatar');
-    const menuName = document.getElementById('menuName');
-    const menuEmail = document.getElementById('menuEmail');
-    const menuLogoutBtn = document.getElementById('menuLogoutBtn');
-    
-    if (currentUser && profileDropdown) {
-        // Show profile dropdown
-        profileDropdown.style.display = 'inline-block';
-        
-        // Set avatars
-        const initials = currentUser.name.charAt(0).toUpperCase();
-        if (navAvatar) {
-            if (currentUser.picture) {
-                navAvatar.style.backgroundImage = `url(${currentUser.picture})`;
-                navAvatar.style.backgroundSize = 'cover';
-                navAvatar.textContent = '';
-            } else {
-                navAvatar.textContent = initials;
-            }
-        }
-        
-        if (menuAvatar) {
-            if (currentUser.picture) {
-                menuAvatar.style.backgroundImage = `url(${currentUser.picture})`;
-                menuAvatar.style.backgroundSize = 'cover';
-                menuAvatar.textContent = '';
-            } else {
-                menuAvatar.textContent = initials;
-            }
-        }
-        
-        // Set user info
-        if (menuName) menuName.textContent = currentUser.name;
-        if (menuEmail) menuEmail.textContent = currentUser.email;
-        
-        // Setup profile button click
-        if (profileBtn) {
-            profileBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                profileMenu?.classList.toggle('show');
-            });
-        }
-        
-        // Setup logout button
-        if (menuLogoutBtn) {
-            menuLogoutBtn.addEventListener('click', handleLogout);
-        }
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (profileMenu && !profileDropdown.contains(e.target)) {
-                profileMenu.classList.remove('show');
-            }
-        });
-    }
-}
-
-
 
 // Show contact form after authentication
 function showContactForm() {
@@ -328,25 +276,6 @@ function showContactForm() {
     
     if (authSection) authSection.style.display = 'none';
     contactForm.style.display = 'flex';
-}
-
-// Handle logout
-async function handleLogout() {
-    if (supabase) {
-        await supabase.auth.signOut();
-    }
-    currentUser = null;
-    
-    // Hide profile dropdown and show auth section
-    const profileDropdown = document.getElementById('profileDropdown');
-    const authSection = document.getElementById('authSection');
-    const contactForm = document.getElementById('contactForm');
-    
-    if (profileDropdown) profileDropdown.style.display = 'none';
-    if (authSection) authSection.style.display = 'flex';
-    if (contactForm) contactForm.style.display = 'none';
-    
-    showNotification('Logged out successfully', 'success');
 }
 
 // Handle form submission

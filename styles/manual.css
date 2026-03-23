@@ -3,7 +3,7 @@
 /* ===== MANUAL HERO ===== */
 .manual-hero {
     background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
-    padding: 120px 0 70px;
+    padding: 100px 0 50px;
     position: relative;
 }
 
@@ -18,29 +18,29 @@
 }
 
 .manual-logo {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 48px;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 32px;
     display: block;
     opacity: 0.9;
 }
 
 .manual-title {
     font-family: 'Akira Expanded', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
-    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    font-size: clamp(2rem, 5vw, 2.75rem);
     font-weight: normal;
     color: #FFFFFF;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     letter-spacing: -0.03em;
     text-transform: uppercase;
     line-height: 1.05;
 }
 
 .manual-subtitle {
-    font-size: 1.125rem;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 64px;
-    line-height: 1.75;
+    margin-bottom: 48px;
+    line-height: 1.6;
     font-weight: 400;
     max-width: 640px;
     margin-left: auto;

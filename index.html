@@ -49,7 +49,7 @@
                 <a href="#download" class="nav-link">Download</a>
                 <a href="contact.html" class="nav-link">Contact</a>
                 <a href="manual.html" class="nav-link">Manual</a>
-                <a href="login.html" class="nav-link">Login</a>
+                <div id="authContainer"></div>
             </div>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span></span>
@@ -230,7 +230,7 @@
                         </svg>
                         Student Manual
                     </a>
-                    <a href="manual.html?type=teacher" class="btn btn-outline demo-btn" data-demo="teacher">
+                    <a href="manual.html?type=teacher" class="btn btn-outline demo-btn" style="color: #1A1A1A;" data-demo="teacher">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14,2 14,8 20,8"/>
@@ -391,6 +391,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script type="module" src="./scripts/global-auth.js"></script>
     <script src="./scripts/main.js"></script>
     <script src="./scripts/download-tracker.js"></script>
 </body>

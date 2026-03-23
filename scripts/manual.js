@@ -32,25 +32,8 @@ function setupEventListeners() {
         });
     });
     
-    // Mobile navigation toggle
-    const navToggle = document.querySelector('.nav-toggle');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (navToggle && navLinks) {
-        navToggle.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-            navToggle.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking on a link
-        const navLinksItems = navLinks.querySelectorAll('.nav-link');
-        navLinksItems.forEach(item => {
-            item.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                navToggle.classList.remove('active');
-            });
-        });
-    }
+    // Mobile navigation is now handled by global-auth.js
+    // Removed duplicate mobile navigation setup to avoid conflicts
 }
 
 // Show specific tab (student or teacher)
@@ -102,13 +85,7 @@ document.addEventListener('keydown', function(e) {
             card.classList.remove('open');
         });
         
-        // Also close mobile menu
-        const navLinks = document.querySelector('.nav-links');
-        const navToggle = document.querySelector('.nav-toggle');
-        if (navLinks && navToggle) {
-            navLinks.classList.remove('active');
-            navToggle.classList.remove('active');
-        }
+        // Mobile menu closing is handled by global-auth.js
     }
 });
 

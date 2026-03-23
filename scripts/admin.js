@@ -466,7 +466,7 @@ function loadManualViews() {
     }
 }
 
-// Display contacts
+// Display contacts - REFACTORED: Static cards that open modals
 function displayContacts(contacts) {
     const contactsList = document.getElementById('contactsList');
     if (!contactsList) return;
@@ -481,39 +481,23 @@ function displayContacts(contacts) {
         const statusBadge = getStatusBadge(contact.status || 'unread');
         const contactId = contact.id || 'local_' + Date.now();
         const escapedMessage = (contact.message || 'No message').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+        const messagePreview = (contact.message || 'No message').substring(0, 100) + (contact.message && contact.message.length > 100 ? '...' : '');
         
         return `
-        <div class="contact-card ${contact.status === 'unread' ? 'unread' : ''}" data-contact-id="${contactId}" data-status="${contact.status || 'unread'}">
-            <div class="contact-card-header" onclick="toggleContactCard('${contactId}')">
-                <div class="contact-header">
-                    <div class="contact-info">
-                        <h4>${contact.name || 'Unknown'}</h4>
-                        <p>${contact.email || 'No email'}</p>
-                        ${contact.subject ? `<span class="contact-subject">${contact.subject}</span>` : ''}
-                    </div>
-                    <div class="contact-meta">
-                        ${statusBadge}
-                        <span class="contact-date">${new Date(createdAt).toLocaleDateString()}</span>
-                        <div class="contact-toggle">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </div>
-                    </div>
+        <div class="contact-card ${contact.status === 'unread' ? 'unread' : ''}" 
+             data-contact-id="${contactId}" 
+             data-status="${contact.status || 'unread'}"
+             onclick="openContactModal('${contactId}', '${contact.name}', '${contact.email}', '${escapedMessage}', '${contact.subject || 'General Inquiry'}', '${createdAt}', '${contact.status || 'unread'}')">
+            <div class="contact-card-content">
+                <div class="contact-info">
+                    <h4>${contact.name || 'Unknown'}</h4>
+                    <p class="contact-email">${contact.email || 'No email'}</p>
+                    <p class="contact-message-preview">${messagePreview}</p>
                 </div>
-            </div>
-            <div class="contact-card-body">
-                <div class="contact-body">
-                    <p>${contact.message || 'No message'}</p>
-                </div>
-                <div class="contact-actions">
-                    <button class="btn btn-sm btn-primary" onclick="openReplyModal('${contactId}', '${contact.name}', '${contact.email}', '${escapedMessage}')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                        </svg>
-                        Reply
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteContact('${contactId}')">Delete</button>
+                <div class="contact-meta">
+                    ${statusBadge}
+                    ${contact.subject ? `<span class="contact-subject">${contact.subject}</span>` : ''}
+                    <span class="contact-date">${new Date(createdAt).toLocaleDateString()}</span>
                 </div>
             </div>
         </div>
@@ -521,13 +505,83 @@ function displayContacts(contacts) {
     }).join('');
 }
 
-// Toggle contact card expansion
-window.toggleContactCard = function(contactId) {
-    const card = document.querySelector(`[data-contact-id="${contactId}"]`);
-    if (card) {
-        card.classList.toggle('expanded');
+// Open contact modal - NEW iOS-style centered modal
+window.openContactModal = function(contactId, contactName, contactEmail, contactMessage, contactSubject, createdAt, status) {
+    const modal = document.createElement('div');
+    modal.className = 'contact-modal-overlay';
+    modal.innerHTML = `
+        <div class="contact-modal-content">
+            <div class="contact-modal-header">
+                <h3>Contact Message</h3>
+                <button class="modal-close" onclick="closeContactModal()">&times;</button>
+            </div>
+            <div class="contact-modal-body">
+                <div class="contact-detail-row">
+                    <span class="detail-label">From:</span>
+                    <span class="detail-value">${contactName}</span>
+                </div>
+                <div class="contact-detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">${contactEmail}</span>
+                </div>
+                <div class="contact-detail-row">
+                    <span class="detail-label">Subject:</span>
+                    <span class="detail-value">${contactSubject}</span>
+                </div>
+                <div class="contact-detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value">${new Date(createdAt).toLocaleString()}</span>
+                </div>
+                <div class="contact-detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">${getStatusBadge(status)}</span>
+                </div>
+                <div class="contact-message-full">
+                    <span class="detail-label">Message:</span>
+                    <p>${contactMessage || 'No message'}</p>
+                </div>
+            </div>
+            <div class="contact-modal-footer">
+                <button class="btn btn-outline" onclick="closeContactModal()">Close</button>
+                <button class="btn btn-primary" onclick="closeContactModal(); openReplyModal('${contactId}', '${contactName}', '${contactEmail}', '${contactMessage}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                    Reply
+                </button>
+                <button class="btn btn-danger" onclick="closeContactModal(); confirmDeleteContact('${contactId}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                    Delete
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+    
+    // Close on overlay click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeContactModal();
+        }
+    });
+};
+
+// Close contact modal
+window.closeContactModal = function() {
+    const modal = document.querySelector('.contact-modal-overlay');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
     }
 };
+
+// Remove old toggle function (no longer needed)
+// window.toggleContactCard is removed
 
 // Filter contacts by status
 function filterContacts(filter) {

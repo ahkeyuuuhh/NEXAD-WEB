@@ -37,6 +37,7 @@
                 <a href="index.html#download" class="nav-link">Download</a>
                 <a href="contact.html" class="nav-link">Contact</a>
                 <a href="manual.html" class="nav-link active">Manual</a>
+                <div id="authContainer"></div>
             </div>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span></span>
@@ -330,7 +331,8 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="./scripts/manual.js"></script>
-    <script src="./scripts/page-view-tracker.js"></script>
+    <script type="module" src="./scripts/global-auth.js"></script>
+    <script defer src="./scripts/manual.js"></script>
+    <script defer src="./scripts/page-view-tracker.js"></script>
 </body>
 </html>
