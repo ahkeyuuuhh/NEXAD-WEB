@@ -79,6 +79,15 @@ async function checkSession() {
 // Update current user object
 function updateCurrentUser(user) {
     console.log('🔵 [Global Auth] User metadata:', user.user_metadata);
+    console.log('🔵 [Global Auth] Full user object:', user);
+    
+    // Google OAuth can return picture in multiple fields
+    const picture = user.user_metadata?.avatar_url || 
+                   user.user_metadata?.picture || 
+                   user.user_metadata?.avatar || 
+                   user.identities?.[0]?.identity_data?.avatar_url ||
+                   user.identities?.[0]?.identity_data?.picture ||
+                   null;
     
     currentUser = {
         name: user.user_metadata?.full_name || 
@@ -86,12 +95,11 @@ function updateCurrentUser(user) {
               user.email?.split('@')[0] || 
               'User',
         email: user.email,
-        picture: user.user_metadata?.avatar_url || 
-                user.user_metadata?.picture || 
-                null
+        picture: picture
     };
     
     console.log('🟢 [Global Auth] Current user:', currentUser);
+    console.log('🟢 [Global Auth] Profile picture URL:', picture);
 }
 
 // Update navigation based on auth state
@@ -132,31 +140,28 @@ function updateNavigationAuthContent(authContainer, isLoggedIn) {
     }
 }
 
-// Create profile dropdown HTML
+// Create simple profile display HTML
 function createProfileDropdown() {
     const initials = currentUser.name.charAt(0).toUpperCase();
+    
+    // Create comprehensive inline style for profile picture
     const avatarStyle = currentUser.picture 
-        ? `background-image: url(${currentUser.picture}); background-size: cover; background-position: center;`
-        : '';
+        ? `background-image: url('${currentUser.picture}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: transparent;`
+        : 'background-color: #666666;';
+    
+    console.log('🎨 [Global Auth] Avatar style:', avatarStyle);
+    console.log('🎨 [Global Auth] Picture URL:', currentUser.picture);
     
     return `
-        <div class="profile-dropdown" id="profileDropdown">
-            <button class="profile-btn" id="profileBtn">
-                <div class="profile-avatar" id="navAvatar" style="${avatarStyle}">
+        <div class="profile-simple" id="profileSimple">
+            <button class="profile-account" id="profileAccountBtn">
+                <div class="profile-avatar-simple" id="profileAvatar" style="${avatarStyle}">
                     ${currentUser.picture ? '' : initials}
                 </div>
+                <span class="profile-account-name">${currentUser.name}</span>
             </button>
-            <div class="profile-menu" id="profileMenu">
-                <div class="profile-menu-header">
-                    <div class="profile-menu-avatar" id="menuAvatar" style="${avatarStyle}">
-                        ${currentUser.picture ? '' : initials}
-                    </div>
-                    <div class="profile-menu-info">
-                        <span class="profile-menu-name">${currentUser.name}</span>
-                        <span class="profile-menu-email">${currentUser.email}</span>
-                    </div>
-                </div>
-                <button class="profile-menu-logout" id="menuLogoutBtn">
+            <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                <button class="profile-logout-btn" id="logoutBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                         <polyline points="16 17 21 12 16 7"/>
@@ -183,23 +188,27 @@ function createLoginButton() {
     `;
 }
 
-// Setup profile dropdown interactions
+// Setup simple profile interactions
 function setupProfileDropdown() {
-    const profileBtn = document.getElementById('profileBtn');
-    const profileMenu = document.getElementById('profileMenu');
-    const logoutBtn = document.getElementById('menuLogoutBtn');
-    const profileDropdown = document.getElementById('profileDropdown');
+    const profileAccountBtn = document.getElementById('profileAccountBtn');
+    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const profileSimple = document.getElementById('profileSimple');
     
-    if (profileBtn && profileMenu) {
-        profileBtn.addEventListener('click', function(e) {
+    // Force update profile picture after DOM creation
+    updateProfilePicture();
+    
+    if (profileAccountBtn && profileDropdownMenu) {
+        // Toggle dropdown on profile click
+        profileAccountBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            profileMenu.classList.toggle('show');
+            profileDropdownMenu.classList.toggle('show');
         });
         
-        // Close menu when clicking outside
+        // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
-            if (profileDropdown && !profileDropdown.contains(e.target)) {
-                profileMenu.classList.remove('show');
+            if (profileSimple && !profileSimple.contains(e.target)) {
+                profileDropdownMenu.classList.remove('show');
             }
         });
     }
@@ -208,8 +217,23 @@ function setupProfileDropdown() {
         logoutBtn.addEventListener('click', handleLogout);
     }
     
-    // Setup mobile navigation if not already set up
+    // Setup mobile navigation
     setupMobileNavigation();
+}
+
+// Force update profile picture
+function updateProfilePicture() {
+    if (!currentUser || !currentUser.picture) return;
+    
+    const profileAvatar = document.getElementById('profileAvatar');
+    
+    const style = `background-image: url('${currentUser.picture}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: transparent;`;
+    
+    if (profileAvatar) {
+        profileAvatar.style.cssText = style;
+        profileAvatar.textContent = ''; // Remove initials
+        console.log('🎨 [Global Auth] Updated profile avatar style');
+    }
 }
 
 // Setup login button
@@ -225,28 +249,85 @@ function setupMobileNavigation() {
     const navLinks = document.querySelector('.nav-links');
     
     if (!navToggle || !navLinks) {
+        console.warn('⚠️ [Global Auth] Mobile nav elements not found');
         return;
     }
     
-    // Remove existing listeners to avoid duplicates
-    const newNavToggle = navToggle.cloneNode(true);
-    navToggle.parentNode.replaceChild(newNavToggle, navToggle);
+    // Create overlay backdrop if it doesn't exist
+    let overlay = document.querySelector('.nav-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'nav-overlay';
+        document.body.appendChild(overlay);
+        console.log('✅ [Global Auth] Created nav overlay');
+    }
     
-    // Add click listener
-    newNavToggle.addEventListener('click', function(e) {
+    // Toggle menu function
+    function toggleMenu(shouldOpen) {
+        const menu = document.querySelector('.nav-links');
+        const toggle = document.querySelector('.nav-toggle');
+        const backdrop = document.querySelector('.nav-overlay');
+        
+        if (shouldOpen) {
+            menu.classList.add('active');
+            toggle.classList.add('active');
+            backdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            console.log('🔵 [Global Auth] Mobile menu opened');
+        } else {
+            menu.classList.remove('active');
+            toggle.classList.remove('active');
+            backdrop.classList.remove('active');
+            document.body.style.overflow = '';
+            console.log('🔵 [Global Auth] Mobile menu closed');
+        }
+    }
+    
+    // Remove existing listeners by cloning
+    const newToggle = navToggle.cloneNode(true);
+    navToggle.parentNode.replaceChild(newToggle, navToggle);
+    
+    const newOverlay = overlay.cloneNode(true);
+    overlay.parentNode.replaceChild(newOverlay, overlay);
+    
+    // Burger menu click
+    document.querySelector('.nav-toggle').addEventListener('click', function(e) {
+        e.preventDefault();
         e.stopPropagation();
-        navLinks.classList.toggle('active');
-        newNavToggle.classList.toggle('active');
-        console.log('🔵 [Global Auth] Mobile menu toggled');
+        const isOpen = document.querySelector('.nav-links').classList.contains('active');
+        toggleMenu(!isOpen);
     });
     
-    // Close mobile menu when clicking on a link
-    const navLinksItems = navLinks.querySelectorAll('.nav-link');
-    navLinksItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navLinks.classList.remove('active');
-            newNavToggle.classList.remove('active');
+    // Overlay click to close
+    document.querySelector('.nav-overlay').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu(false);
+    });
+    
+    // Close when clicking nav links
+    const allLinks = navLinks.querySelectorAll('.nav-link');
+    allLinks.forEach(link => {
+        const newLink = link.cloneNode(true);
+        link.parentNode.replaceChild(newLink, link);
+    });
+    
+    // Close menu when clicking navigation links
+    document.querySelectorAll('.nav-link:not(.login-btn)').forEach(link => {
+        link.addEventListener('click', () => {
+            console.log('🔵 [Global Auth] Navigation link clicked, closing menu');
+            toggleMenu(false);
         });
+    });
+    
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const menu = document.querySelector('.nav-links');
+            if (menu && menu.classList.contains('active')) {
+                toggleMenu(false);
+            }
+        }
     });
     
     console.log('✅ [Global Auth] Mobile navigation setup complete');
