@@ -257,9 +257,9 @@ body {
 }
 
 .nav-scrolled {
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .nav-container {
@@ -292,7 +292,7 @@ body {
 }
 
 .nav-scrolled .nav-logo {
-    filter: none;
+    filter: brightness(0) invert(1);
 }
 
 .nav-title {
@@ -303,7 +303,7 @@ body {
 }
 
 .nav-scrolled .nav-title {
-    color: var(--color-ink-1);
+    color: #FFFFFF;
 }
 
 .nav-links {
@@ -342,11 +342,11 @@ body {
 }
 
 .nav-scrolled .nav-link {
-    color: var(--color-ink-2);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .nav-scrolled .nav-link:hover {
-    color: var(--color-ink-1);
+    color: #FFFFFF;
 }
 
 .nav-toggle {
@@ -370,7 +370,7 @@ body {
 }
 
 .nav-scrolled .nav-toggle span {
-    background: var(--color-ink-1);
+    background: #FFFFFF;
 }
 /* ===== HERO SECTION ===== */
 .hero {
@@ -1534,9 +1534,9 @@ body {
 }
 /* ===== ENHANCED SCROLL EFFECTS ===== */
 .nav-scrolled {
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ===== LOADING STATES ===== */
@@ -1762,7 +1762,7 @@ body {
 }
 
 .nav-scrolled .profile-account-name {
-    color: var(--color-ink-1);
+    color: #FFFFFF;
 }
 
 .profile-dropdown-menu {
