@@ -874,10 +874,11 @@ body {
         width: 320px !important; 
         max-width: 85vw !important; 
         height: 100vh !important;
+        height: 100dvh !important; /* Dynamic viewport height for mobile */
         background: #000000 !important; 
         flex-direction: column !important; 
         align-items: stretch !important;
-        padding: 80px 0 20px 0 !important; 
+        padding: 0 !important; 
         gap: 0 !important; 
         transform: translateX(100%) !important; 
         transition: transform 0.3s ease !important; 
@@ -886,6 +887,16 @@ body {
         overflow-x: hidden !important;
         display: flex !important; 
         box-shadow: -4px 0 20px rgba(0,0,0,0.8) !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Add padding to first and last items for spacing */
+    .nav-links > :first-child {
+        margin-top: 80px !important;
+    }
+    
+    .nav-links > :last-child {
+        margin-bottom: 20px !important;
     }
     
     .nav-links.active { 
@@ -962,12 +973,13 @@ body {
     }
     
     #authContainer { 
-        padding: 20px 28px !important; 
+        padding: 24px 28px 28px 28px !important; 
         margin-top: auto !important; 
         border-top: 2px solid rgba(255,255,255,0.15) !important; 
         background: rgba(255,255,255,0.03) !important;
         flex-shrink: 0 !important;
         width: 100% !important;
+        min-height: fit-content !important;
     }
     
     .profile-simple { 
