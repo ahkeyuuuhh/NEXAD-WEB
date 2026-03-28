@@ -6,15 +6,22 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 let supabase = null;
 let currentUser = null;
 
-// Initialize Supabase
+// Initialize Supabase with persistence
 console.log('📜 Contact.js loaded');
 
 try {
     const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
     
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ Supabase client initialized');
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storage: window.localStorage
+        }
+    });
+    console.log('✅ Supabase client initialized with session persistence');
 } catch (error) {
     console.error('❌ Failed to initialize Supabase:', error);
 }

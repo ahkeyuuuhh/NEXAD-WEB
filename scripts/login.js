@@ -5,13 +5,20 @@ let supabase = null;
 
 console.log('📜 Login.js loaded');
 
-// Initialize Supabase
+// Initialize Supabase with persistence
 try {
     const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
     
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ Supabase client initialized');
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storage: window.localStorage
+        }
+    });
+    console.log('✅ Supabase client initialized with session persistence');
 } catch (error) {
     console.error('❌ Failed to initialize Supabase:', error);
 }
@@ -123,9 +130,14 @@ async function handleGoogleSignIn() {
         
         console.log('🔵 [OAuth] Starting Google OAuth...');
         
+        // Get the current origin for redirect
+        const redirectUrl = `${window.location.origin}${window.location.pathname}`;
+        console.log('🔵 [OAuth] Redirect URL:', redirectUrl);
+        
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
+                redirectTo: redirectUrl,
                 queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',

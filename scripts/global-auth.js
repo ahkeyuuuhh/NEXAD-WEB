@@ -6,13 +6,20 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 let supabase = null;
 let currentUser = null;
 
-// Initialize Supabase
+// Initialize Supabase with persistence
 try {
     const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
     
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ [Global Auth] Supabase initialized');
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storage: window.localStorage
+        }
+    });
+    console.log('✅ [Global Auth] Supabase initialized with session persistence');
 } catch (error) {
     console.error('❌ [Global Auth] Failed to initialize Supabase:', error);
 }
@@ -177,7 +184,7 @@ function createProfileDropdown() {
 // Create login button HTML
 function createLoginButton() {
     return `
-        <a href="contact.html" class="nav-link login-btn">
+        <a href="login.html" class="nav-link login-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="margin-right: 6px;">
                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
                 <polyline points="10 17 15 12 10 7"/>
