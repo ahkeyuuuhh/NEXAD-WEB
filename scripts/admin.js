@@ -934,22 +934,8 @@ async function sendReplyToWebhook(contact, replyMessage) {
     
     console.log('✅ Contact data validated');
     
-    // TODO: Replace with your Make.com webhook URL for admin replies
-    const WEBHOOK_URL = 'YOUR_MAKE_COM_WEBHOOK_URL_HERE';
-    
-    // Check if webhook URL is configured
-    if (WEBHOOK_URL === 'YOUR_MAKE_COM_WEBHOOK_URL_HERE') {
-        console.warn('⚠️ Webhook URL not configured yet');
-        console.log('📝 Reply data that would be sent:', {
-            contact_name: contact.name,
-            contact_email: contact.email,
-            original_message: contact.message,
-            reply_message: replyMessage,
-            admin_email: currentAdmin?.email || 'nexad.support@gmail.com'
-        });
-        // Don't throw error - reply is still saved
-        return { success: true, message: 'Reply saved (webhook not configured)' };
-    }
+    // Make.com webhook URL for admin replies
+    const WEBHOOK_URL = 'https://hook.eu1.make.com/s7wl6b33237xln9t01hiqt1l87md58nr';
     
     const payload = {
         type: 'admin_reply',
@@ -962,7 +948,8 @@ async function sendReplyToWebhook(contact, replyMessage) {
         replied_at: new Date().toISOString()
     };
     
-    console.log('📦 Sending to webhook:', WEBHOOK_URL);
+    console.log('📦 Payload to send:', JSON.stringify(payload, null, 2));
+    console.log('📤 Sending to webhook:', WEBHOOK_URL);
     
     const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
@@ -973,6 +960,9 @@ async function sendReplyToWebhook(contact, replyMessage) {
     });
     
     console.log('📬 Webhook response status:', response.status);
+    
+    const responseText = await response.text();
+    console.log('📄 Webhook response:', responseText);
     
     if (!response.ok) {
         console.warn('⚠️ Webhook returned error, but reply is still saved');
