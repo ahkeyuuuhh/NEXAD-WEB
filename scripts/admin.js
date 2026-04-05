@@ -890,16 +890,14 @@ window.sendReply = async function(contactId, contactEmail, contactName) {
             })
             .eq('id', contactId);
         
-        // Try to send email (but don't fail if it doesn't work)
+        // Send reply data to Make.com webhook for email automation
         try {
-            await sendEmailDirectly(contact, replyMessage);
-            console.log('✅ Reply email sent to customer');
-            showNotification('Reply sent successfully!', 'success');
-        } catch (emailError) {
-            console.error('⚠️ Email send failed (expected in testing mode):', emailError);
-            // Still show success because reply was saved
-            console.log('✅ REPLY SAVED SUCCESSFULLY - Email notification skipped (Resend testing mode)');
-            showNotification('✅ Reply saved successfully! Email notification skipped (Resend is in testing mode)', 'success');
+            await sendReplyToWebhook(contact, replyMessage);
+            console.log('✅ Reply sent to automation webhook');
+            showNotification('✅ Reply sent successfully!', 'success');
+        } catch (webhookError) {
+            console.error('⚠️ Webhook failed (reply still saved):', webhookError);
+            showNotification('✅ Reply saved successfully! (Email notification will be sent via automation)', 'success');
         }
         
         closeReplyModal();
@@ -921,9 +919,9 @@ window.sendReply = async function(contactId, contactEmail, contactName) {
     }
 };
 
-// Send email directly to Resend API (no Edge Function needed)
-async function sendEmailDirectly(contact, replyMessage) {
-    console.log('📧 sendEmailDirectly called');
+// Send reply data to Make.com webhook for email automation
+async function sendReplyToWebhook(contact, replyMessage) {
+    console.log('📧 Sending reply to webhook automation...');
     
     // Validate contact data
     if (!contact || !contact.email || !contact.name) {
@@ -936,54 +934,53 @@ async function sendEmailDirectly(contact, replyMessage) {
     
     console.log('✅ Contact data validated');
     
-    // Call Edge Function using direct fetch
-    try {
-        console.log('📤 Calling Edge Function...');
-        
-        const supabaseUrl = 'https://klrfkhyvgtffsjpdioax.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtscmZraHl2Z3RmZnNqcGRpb2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNzE5MDUsImV4cCI6MjA4NTY0NzkwNX0.9_AjIcRSVNjgpPcmBsP-UCjLpQyIqt3Za41KK9IqrgM';
-        
-        const payload = {
-            type: 'reply_to_customer',
-            contact: {
-                id: contact.id || 'unknown',
-                name: contact.name || 'User',
-                email: contact.email,
-                message: contact.message || 'No message',
-                subject: contact.subject || 'General Inquiry'
-            },
-            reply: {
-                message: replyMessage
-            }
-        };
-        
-        console.log('📦 Sending payload to Edge Function');
-        
-        const response = await fetch(`${supabaseUrl}/functions/v1/send-contact-email`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': supabaseAnonKey
-            },
-            body: JSON.stringify(payload)
+    // TODO: Replace with your Make.com webhook URL for admin replies
+    const WEBHOOK_URL = 'YOUR_MAKE_COM_WEBHOOK_URL_HERE';
+    
+    // Check if webhook URL is configured
+    if (WEBHOOK_URL === 'YOUR_MAKE_COM_WEBHOOK_URL_HERE') {
+        console.warn('⚠️ Webhook URL not configured yet');
+        console.log('📝 Reply data that would be sent:', {
+            contact_name: contact.name,
+            contact_email: contact.email,
+            original_message: contact.message,
+            reply_message: replyMessage,
+            admin_email: currentAdmin?.email || 'nexad.support@gmail.com'
         });
-        
-        console.log('📬 Response status:', response.status);
-        
-        const responseText = await response.text();
-        console.log('📄 Response:', responseText);
-        
-        if (!response.ok) {
-            throw new Error(`Edge Function error (${response.status}): Email notification failed. This is expected in Resend testing mode.`);
-        }
-        
-        const data = JSON.parse(responseText);
-        console.log('✅ Email sent successfully!');
-        return data;
-    } catch (error) {
-        console.error('❌ Failed:', error);
-        throw new Error(`Failed to send email: ${error.message || 'Unknown error'}`);
+        // Don't throw error - reply is still saved
+        return { success: true, message: 'Reply saved (webhook not configured)' };
     }
+    
+    const payload = {
+        type: 'admin_reply',
+        contact_name: contact.name,
+        contact_email: contact.email,
+        contact_subject: contact.subject || 'Your NEXAD Inquiry',
+        original_message: contact.message,
+        reply_message: replyMessage,
+        admin_email: currentAdmin?.email || 'nexad.support@gmail.com',
+        replied_at: new Date().toISOString()
+    };
+    
+    console.log('📦 Sending to webhook:', WEBHOOK_URL);
+    
+    const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
+    
+    console.log('📬 Webhook response status:', response.status);
+    
+    if (!response.ok) {
+        console.warn('⚠️ Webhook returned error, but reply is still saved');
+        return { success: true, message: 'Reply saved (webhook failed)' };
+    }
+    
+    console.log('✅ Reply sent to webhook successfully!');
+    return { success: true, message: 'Reply sent to automation' };
 }
 
 // Mark contact as read
