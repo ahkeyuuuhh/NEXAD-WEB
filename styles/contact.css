@@ -428,6 +428,25 @@
     outline: none;
 }
 
+/* Dropdown/Select specific styling */
+.form-input-compact[type="select"],
+.form-input-compact option,
+select.form-input-compact {
+    background: rgba(26, 26, 26, 0.98);
+    color: #FFFFFF;
+}
+
+.form-input-compact option {
+    background: #1a1a1a;
+    color: #FFFFFF;
+    padding: 10px;
+}
+
+.form-input-compact option:hover,
+.form-input-compact option:checked {
+    background: rgba(255, 255, 255, 0.1);
+}
+
 .form-input-compact::placeholder,
 .form-textarea-compact::placeholder {
     color: rgba(255, 255, 255, 0.4);
