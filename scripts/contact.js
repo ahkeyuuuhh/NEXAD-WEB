@@ -312,7 +312,23 @@ async function handleFormSubmit(e) {
     submitBtn.textContent = 'Sending...';
     
     try {
-        // Try to save to database if available
+        // 1. Send to Make.com webhook
+        let webhookSuccess = false;
+        try {
+            console.log('📤 Sending to Make.com webhook...');
+            const webhookResponse = await sendToWebhook(contactData);
+            webhookSuccess = webhookResponse.success;
+            
+            if (webhookSuccess) {
+                console.log('✅ Successfully sent to webhook');
+            } else {
+                console.warn('⚠️ Webhook send failed:', webhookResponse.error);
+            }
+        } catch (webhookError) {
+            console.error('❌ Webhook error:', webhookError);
+        }
+        
+        // 2. Try to save to database if available
         let savedToDatabase = false;
         let contactId = null;
         
@@ -344,12 +360,13 @@ async function handleFormSubmit(e) {
             }
         }
         
-        // Always save to localStorage as backup
+        // 3. Always save to localStorage as backup
         const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
         contacts.push({
             ...contactData,
             id: contactId || 'local_' + Date.now(),
-            savedToDatabase: savedToDatabase
+            savedToDatabase: savedToDatabase,
+            sentToWebhook: webhookSuccess
         });
         localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
         console.log('✅ Contact saved to localStorage');
@@ -359,6 +376,9 @@ async function handleFormSubmit(e) {
         successMessage.style.display = 'block';
         
         console.log('✅ Contact form submitted successfully');
+        
+        // Show success notification
+        showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
         
         // Reset form after 3 seconds and show form again (user stays logged in)
         setTimeout(() => {
@@ -378,6 +398,52 @@ async function handleFormSubmit(e) {
         
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
+    }
+}
+
+// Send form data to Make.com webhook
+async function sendToWebhook(contactData) {
+    const WEBHOOK_URL = 'https://hook.eu1.make.com/rjls5ysrfykr7vzhgx6w1biqtrg3t6b8';
+    
+    try {
+        console.log('🔗 Sending to webhook:', WEBHOOK_URL);
+        console.log('📦 Data:', contactData);
+        
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(contactData)
+        });
+        
+        // Check if response is ok (status 200-299)
+        if (!response.ok) {
+            throw new Error(`Webhook responded with status: ${response.status}`);
+        }
+        
+        // Try to parse response as JSON (Make.com usually returns JSON)
+        let responseData;
+        try {
+            responseData = await response.json();
+            console.log('✅ Webhook response:', responseData);
+        } catch (parseError) {
+            // If response is not JSON, just get the text
+            responseData = await response.text();
+            console.log('✅ Webhook response (text):', responseData);
+        }
+        
+        return {
+            success: true,
+            data: responseData
+        };
+        
+    } catch (error) {
+        console.error('❌ Webhook error:', error);
+        return {
+            success: false,
+            error: error.message
+        };
     }
 }
 
