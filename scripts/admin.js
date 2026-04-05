@@ -898,7 +898,8 @@ window.sendReply = async function(contactId, contactEmail, contactName) {
         } catch (emailError) {
             console.error('⚠️ Email send failed (expected in testing mode):', emailError);
             // Still show success because reply was saved
-            showNotification('Reply saved successfully! (Email notification skipped - Resend is in testing mode)', 'success');
+            console.log('✅ REPLY SAVED SUCCESSFULLY - Email notification skipped (Resend testing mode)');
+            showNotification('✅ Reply saved successfully! Email notification skipped (Resend is in testing mode)', 'success');
         }
         
         closeReplyModal();
@@ -1248,6 +1249,8 @@ function showError(message) {
 
 // Show notification
 function showNotification(message, type = 'info') {
+    console.log(`🔔 NOTIFICATION: [${type.toUpperCase()}] ${message}`);
+    
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -1265,21 +1268,34 @@ function showNotification(message, type = 'info') {
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.95);
                 backdrop-filter: blur(10px);
                 border: 1px solid rgba(255, 255, 255, 0.2);
                 border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-                z-index: 10000;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+                z-index: 10001;
                 transform: translateX(400px);
                 transition: transform 0.3s ease;
-                max-width: 350px;
+                max-width: 400px;
+                min-width: 300px;
             }
             .notification.show { transform: translateX(0); }
-            .notification-error { border-left: 4px solid #ef4444; }
-            .notification-success { border-left: 4px solid #22c55e; }
-            .notification-warning { border-left: 4px solid #f59e0b; }
-            .notification-info { border-left: 4px solid #3b82f6; }
+            .notification-error { 
+                border-left: 4px solid #ef4444;
+                background: rgba(239, 68, 68, 0.1);
+            }
+            .notification-success { 
+                border-left: 4px solid #22c55e;
+                background: rgba(34, 197, 94, 0.1);
+            }
+            .notification-warning { 
+                border-left: 4px solid #f59e0b;
+                background: rgba(245, 158, 11, 0.1);
+            }
+            .notification-info { 
+                border-left: 4px solid #3b82f6;
+                background: rgba(59, 130, 246, 0.1);
+            }
             .notification-content {
                 display: flex;
                 align-items: center;
@@ -1287,26 +1303,30 @@ function showNotification(message, type = 'info') {
                 padding: 16px 20px;
             }
             .notification-message {
-                font-size: 14px;
-                color: rgba(255, 255, 255, 0.9);
+                font-size: 15px;
+                font-weight: 500;
+                color: #FFFFFF;
                 line-height: 1.5;
             }
             .notification-close {
                 background: none;
                 border: none;
-                font-size: 20px;
+                font-size: 24px;
                 cursor: pointer;
                 color: rgba(255, 255, 255, 0.6);
                 margin-left: 16px;
                 padding: 0;
-                width: 24px;
-                height: 24px;
+                width: 28px;
+                height: 28px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border-radius: 4px;
+                transition: all 0.2s;
             }
             .notification-close:hover {
-                color: rgba(255, 255, 255, 0.9);
+                background: rgba(255, 255, 255, 0.1);
+                color: #FFFFFF;
             }
         `;
         document.head.appendChild(style);
@@ -1318,7 +1338,7 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
-    }, 5000);
+    }, 7000); // Increased to 7 seconds
     
     notification.querySelector('.notification-close').addEventListener('click', () => {
         notification.classList.remove('show');
