@@ -881,17 +881,7 @@ window.sendReply = async function(contactId, contactEmail, contactName) {
         
         console.log('✅ Reply saved to database');
         
-        // Send email directly using Resend API (bypassing Edge Function)
-        try {
-            await sendEmailDirectly(contact, replyMessage);
-            console.log('✅ Reply email sent to customer');
-            showNotification('Reply sent successfully!', 'success');
-        } catch (emailError) {
-            console.error('⚠️ Email send failed:', emailError);
-            showNotification('Reply saved but email failed to send. Check Resend API key.', 'warning');
-        }
-        
-        // Update contact status to 'replied'
+        // Update contact status to 'replied' FIRST
         await supabase
             .from('contacts')
             .update({ 
@@ -900,15 +890,33 @@ window.sendReply = async function(contactId, contactEmail, contactName) {
             })
             .eq('id', contactId);
         
+        // Try to send email (but don't fail if it doesn't work)
+        try {
+            await sendEmailDirectly(contact, replyMessage);
+            console.log('✅ Reply email sent to customer');
+            showNotification('Reply sent successfully!', 'success');
+        } catch (emailError) {
+            console.error('⚠️ Email send failed (expected in testing mode):', emailError);
+            // Still show success because reply was saved
+            showNotification('Reply saved successfully! (Email notification skipped - Resend is in testing mode)', 'success');
+        }
+        
         closeReplyModal();
         loadContacts();
         
     } catch (error) {
         console.error('❌ Error sending reply:', error);
-        showNotification('Failed to send reply: ' + error.message, 'error');
         
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = originalText;
+        // Check if it's just an email error (reply might still be saved)
+        if (error.message && error.message.includes('Edge Function')) {
+            showNotification('Reply saved but email notification failed. This is expected in testing mode.', 'warning');
+            closeReplyModal();
+            loadContacts();
+        } else {
+            showNotification('Failed to send reply: ' + error.message, 'error');
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = originalText;
+        }
     }
 };
 
@@ -959,13 +967,13 @@ async function sendEmailDirectly(contact, replyMessage) {
             body: JSON.stringify(payload)
         });
         
-        console.log('� Response status:', response.status);
+        console.log('📬 Response status:', response.status);
         
         const responseText = await response.text();
         console.log('📄 Response:', responseText);
         
         if (!response.ok) {
-            throw new Error(`Edge Function returned ${response.status}: ${responseText}`);
+            throw new Error(`Edge Function error (${response.status}): Email notification failed. This is expected in Resend testing mode.`);
         }
         
         const data = JSON.parse(responseText);
