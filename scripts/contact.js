@@ -293,6 +293,11 @@ async function handleFormSubmit(e) {
     const successMessage = document.getElementById('successMessage');
     const submitBtn = contactForm.querySelector('.submit-btn-compact');
     
+    if (!contactForm || !successMessage || !submitBtn) {
+        console.error('❌ Form elements not found');
+        return;
+    }
+    
     const formData = new FormData(contactForm);
     const contactData = {
         name: currentUser?.name || 'Unknown',
@@ -307,12 +312,20 @@ async function handleFormSubmit(e) {
         } : null
     };
     
+    // Validate message
+    if (!contactData.message || contactData.message.trim() === '') {
+        showNotification('Please enter a message', 'error');
+        return;
+    }
+    
     submitBtn.disabled = true;
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Sending...';
     
+    let overallSuccess = false;
+    
     try {
-        // 1. Send to Make.com webhook
+        // 1. Send to Make.com webhook (primary method)
         let webhookSuccess = false;
         try {
             console.log('📤 Sending to Make.com webhook...');
@@ -321,6 +334,7 @@ async function handleFormSubmit(e) {
             
             if (webhookSuccess) {
                 console.log('✅ Successfully sent to webhook');
+                overallSuccess = true; // Webhook success is enough
             } else {
                 console.warn('⚠️ Webhook send failed:', webhookResponse.error);
             }
@@ -328,7 +342,7 @@ async function handleFormSubmit(e) {
             console.error('❌ Webhook error:', webhookError);
         }
         
-        // 2. Try to save to database if available
+        // 2. Try to save to database if available (secondary method)
         let savedToDatabase = false;
         let contactId = null;
         
@@ -352,42 +366,56 @@ async function handleFormSubmit(e) {
                     console.log('✅ Contact saved to database:', data);
                     savedToDatabase = true;
                     contactId = data.id;
+                    overallSuccess = true; // Database success is also enough
                 } else {
                     console.warn('⚠️ Database save failed:', error);
+                    // Don't fail the whole operation if database fails
                 }
             } catch (dbError) {
                 console.warn('⚠️ Database error:', dbError);
+                // Don't fail the whole operation if database fails
             }
         }
         
         // 3. Always save to localStorage as backup
-        const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
-        contacts.push({
-            ...contactData,
-            id: contactId || 'local_' + Date.now(),
-            savedToDatabase: savedToDatabase,
-            sentToWebhook: webhookSuccess
-        });
-        localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
-        console.log('✅ Contact saved to localStorage');
+        try {
+            const contacts = JSON.parse(localStorage.getItem('nexad_contacts') || '[]');
+            contacts.push({
+                ...contactData,
+                id: contactId || 'local_' + Date.now(),
+                savedToDatabase: savedToDatabase,
+                sentToWebhook: webhookSuccess
+            });
+            localStorage.setItem('nexad_contacts', JSON.stringify(contacts));
+            console.log('✅ Contact saved to localStorage');
+            overallSuccess = true; // At minimum, localStorage worked
+        } catch (storageError) {
+            console.error('❌ localStorage error:', storageError);
+        }
         
-        // Show success message
-        contactForm.style.display = 'none';
-        successMessage.style.display = 'block';
-        
-        console.log('✅ Contact form submitted successfully');
-        
-        // Show success notification
-        showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
-        
-        // Reset form after 3 seconds and show form again (user stays logged in)
-        setTimeout(() => {
-            contactForm.reset();
-            contactForm.style.display = 'flex';
-            successMessage.style.display = 'none';
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-        }, 3000);
+        // Show success if ANY method worked
+        if (overallSuccess) {
+            // Show success message
+            contactForm.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            console.log('✅ Contact form submitted successfully');
+            
+            // Show success notification
+            showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
+            
+            // Reset form after 3 seconds and show form again (user stays logged in)
+            setTimeout(() => {
+                contactForm.reset();
+                contactForm.style.display = 'flex';
+                successMessage.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }, 3000);
+        } else {
+            // All methods failed
+            throw new Error('All submission methods failed');
+        }
         
     } catch (error) {
         console.error('❌ Error submitting form:', error);
